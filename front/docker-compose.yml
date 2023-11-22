@@ -1,9 +1,15 @@
 services:
+  backend:
+    image: dvi55/game-store-back:2.0
+    ports:
+      - "8080:8080"
+    links:
+      - database
   database:
     image: postgres:latest
     environment:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: QWERTY
+      POSTGRES_PASSWORD: Qwerty
     ports:
       - "5432:5432"
