@@ -33,4 +33,8 @@ public class JWTService {
                 .withExpiresAt(new Date(System.currentTimeMillis() + (expireTime * 1000)))
                 .sign(algorithm);
     }
+
+    public String getUserEmail(String token) {
+        return JWT.decode(token).getClaim(USER_EMAIL).asString();
+    }
 }

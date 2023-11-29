@@ -4,15 +4,14 @@ import com.gameshop.www.eCommerce.api.model.AuthResponse;
 import com.gameshop.www.eCommerce.api.model.LoginBody;
 import com.gameshop.www.eCommerce.api.model.RegistrationBody;
 import com.gameshop.www.eCommerce.exception.UserAlreadyExistException;
+import com.gameshop.www.eCommerce.model.LocalUser;
 import com.gameshop.www.eCommerce.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -24,8 +23,9 @@ public class AuthenticationController {
         this.userService = userService;
     }
 
+    @CrossOrigin
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegistrationBody registrationBody) {
+    public ResponseEntity register(@Valid @RequestBody RegistrationBody registrationBody) {
         try {
             String jwt = userService.registerUser(registrationBody);
             log.info("User registered successfully");
@@ -33,10 +33,11 @@ public class AuthenticationController {
             response.setJwt(jwt);
             return ResponseEntity.ok(response);
         } catch (UserAlreadyExistException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already");
         }
     }
 
+    @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginBody loginBody) {
         String jwt = userService.loginUser(loginBody);
@@ -48,5 +49,10 @@ public class AuthenticationController {
             response.setJwt(jwt);
             return ResponseEntity.ok(response);
         }
+    }
+
+    @GetMapping("/me")
+    public LocalUser getLoggedUserProfile(@AuthenticationPrincipal LocalUser user) {
+        return user;
     }
 }

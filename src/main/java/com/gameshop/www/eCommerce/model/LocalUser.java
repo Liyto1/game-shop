@@ -1,5 +1,6 @@
 package com.gameshop.www.eCommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,12 +25,14 @@ public class LocalUser {
     @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false, length = 1000)
     private String password;
 
     @Column(name = "email", nullable = false, unique = true, length = 320)
     private String email;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Adress> adresses = new ArrayList<>();
 
