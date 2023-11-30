@@ -1,4 +1,13 @@
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: /Dockerfile
+    image: dvi55/game-store-back:latest
+    ports:
+      - "8080:8080"
+    links:
+      - database
   database:
     image: postgres:latest
     environment:
