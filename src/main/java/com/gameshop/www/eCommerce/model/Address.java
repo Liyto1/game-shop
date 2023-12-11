@@ -9,8 +9,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "adress")
-public class Adress {
+@Table(name = "address")
+public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)

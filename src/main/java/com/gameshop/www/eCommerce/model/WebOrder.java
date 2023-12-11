@@ -13,6 +13,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "web_order")
 public class WebOrder {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
@@ -24,7 +25,7 @@ public class WebOrder {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "adress_id", nullable = false)
-    private Adress adress;
+    private Address address;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<WebOrderQuantity> quantity = new ArrayList<>();

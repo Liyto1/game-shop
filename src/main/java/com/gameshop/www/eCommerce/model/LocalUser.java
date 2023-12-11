@@ -34,7 +34,7 @@ public class LocalUser {
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Adress> adresses = new ArrayList<>();
+    private List<Address> addresses = new ArrayList<>();
 
     @Column(name = "phone_number", nullable = false, unique = true, length = 25)
     private String phoneNumber;
