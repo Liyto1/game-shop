@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface ProductDAO extends JpaRepository<Product, UUID> {
 
-    
+
 }

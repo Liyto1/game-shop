@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/product")
@@ -24,9 +23,9 @@ public class ProductController {
         return productService.getProducts();
     }
 
-//    @GetMapping
-//    public List<Product> getProductsByCategory(String category) {
-//        return productService.getProductsByCategory(category);
+//    @GetMapping("/product/category/{name}")
+//    public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable String name) {
+//        return ResponseEntity.ok(productService.getProductsByCategory(name));
 //    }
 //
 //    @GetMapping

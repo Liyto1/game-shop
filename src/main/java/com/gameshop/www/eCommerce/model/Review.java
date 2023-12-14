@@ -21,8 +21,8 @@ public class Review {
     @Column(name = "comment", length = 1000)
     private String comment;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
 }
