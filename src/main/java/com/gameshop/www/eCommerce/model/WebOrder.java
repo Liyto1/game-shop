@@ -19,15 +19,15 @@ public class WebOrder {
     @Column(name = "id", nullable = false)
     private UUID id;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<WebOrderQuantity> quantities = new ArrayList<>();
+
     @ManyToOne(optional = false)
-    @JoinColumn(name = "local_user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private LocalUser user;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "adress_id", nullable = false)
+    @JoinColumn(name = "address_id", nullable = false)
     private Address address;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<WebOrderQuantity> quantity = new ArrayList<>();
 
 }

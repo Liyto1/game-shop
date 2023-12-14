@@ -32,11 +32,10 @@ public class LocalUser {
     @Column(name = "email", nullable = false, unique = true, length = 320)
     private String email;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Address> addresses = new ArrayList<>();
-
     @Column(name = "phone_number", nullable = false, unique = true, length = 25)
     private String phoneNumber;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Address> addresses = new ArrayList<>();
 
 }

@@ -3,11 +3,13 @@ package com.gameshop.www.eCommerce.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Type;
 import org.hibernate.type.SqlTypes;
 
-import java.util.*;
+import java.time.Instant;
+import java.util.Map;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -32,21 +34,26 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", name = "characteristics")
     private Map<String, Object> characteristics;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @Column(name = "price_with_sale")
+    private Integer priceWithSale;
+
+    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE, optional = false, orphanRemoval = true)
     private Inventory inventory;
 
-    @OneToMany(mappedBy = "product", orphanRemoval = true)
-    private List<Review> reviews = new ArrayList<>();
-
-
-    @OneToOne(mappedBy = "product", optional = false, orphanRemoval = true)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @OneToOne(mappedBy = "product", optional = false, orphanRemoval = true)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
 }
