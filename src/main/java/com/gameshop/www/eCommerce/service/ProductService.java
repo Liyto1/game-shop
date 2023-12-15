@@ -2,6 +2,8 @@ package com.gameshop.www.eCommerce.service;
 
 import com.gameshop.www.eCommerce.dao.ProductDAO;
 import com.gameshop.www.eCommerce.model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +20,8 @@ public class ProductService {
         return productDAO.findAll();
     }
 
-//    public List<Product> getProductsByCategory(String name) {
-//
-//        Optional<Category> category = categoryRepository.findByProduct_Category_NameIgnoreCase(name);
-//        return category.get().getProduct()
-//    }
+    public Page<Product> getProductsByCategory(String name, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return productDAO.findByCategory_NameIgnoreCase(name, pageRequest);
+    }
 }

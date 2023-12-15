@@ -2,9 +2,9 @@ package com.gameshop.www.eCommerce.api.controller.product;
 
 import com.gameshop.www.eCommerce.model.Product;
 import com.gameshop.www.eCommerce.service.ProductService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,15 +18,20 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @CrossOrigin
     @GetMapping
     public List<Product> getProducts() {
         return productService.getProducts();
     }
 
-//    @GetMapping("/product/category/{name}")
-//    public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable String name) {
-//        return ResponseEntity.ok(productService.getProductsByCategory(name));
-//    }
+    @CrossOrigin
+    @GetMapping("/category/{name}")
+    public ResponseEntity<Page<Product>> getProductsByCategory(@PathVariable String name,
+                                                               @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "10") int size) {
+
+        return ResponseEntity.ok(productService.getProductsByCategory(name, page, size));
+    }
 //
 //    @GetMapping
 //    public Product getProductById(UUID id) {
