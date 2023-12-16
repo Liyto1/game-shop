@@ -6,8 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class ProductService {
     private ProductDAO productDAO;
@@ -16,8 +14,9 @@ public class ProductService {
         this.productDAO = productDAO;
     }
 
-    public List<Product> getProducts() {
-        return productDAO.findAll();
+    public Page<Product> getProducts(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return productDAO.findAll(pageRequest);
     }
 
     public Page<Product> getProductsByCategory(String name, int page, int size) {

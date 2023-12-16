@@ -6,8 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -20,8 +18,11 @@ public class ProductController {
 
     @CrossOrigin
     @GetMapping
-    public List<Product> getProducts() {
-        return productService.getProducts();
+    public ResponseEntity<Page<Product>> getProducts(@RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue = "12") int size) {
+
+        Page<Product> products = productService.getProducts(page, size);
+        return ResponseEntity.ok(products);
     }
 
     @CrossOrigin
