@@ -36,4 +36,12 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @CrossOrigin
+    @GetMapping("/recently")
+    public ResponseEntity<Page<Product>> getRecentlyAddProducts(@RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "4") int size) {
+        Page<Product> products = productService.getRecentlyAddProducts(page, size);
+
+        return ResponseEntity.ok(products);
+    }
 }
