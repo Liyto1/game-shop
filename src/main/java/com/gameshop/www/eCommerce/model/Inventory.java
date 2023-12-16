@@ -1,5 +1,6 @@
 package com.gameshop.www.eCommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class Inventory {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    @JsonIgnore
     @OneToOne(optional = false, orphanRemoval = true)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;

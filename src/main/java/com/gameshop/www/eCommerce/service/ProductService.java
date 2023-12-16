@@ -24,4 +24,5 @@ public class ProductService {
         PageRequest pageRequest = PageRequest.of(page, size);
         return productDAO.findByCategory_NameIgnoreCase(name, pageRequest);
     }
+
 }

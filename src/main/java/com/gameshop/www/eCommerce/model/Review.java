@@ -1,5 +1,6 @@
 package com.gameshop.www.eCommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,8 +22,9 @@ public class Review {
     @Column(name = "comment", length = 1000)
     private String comment;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
 }

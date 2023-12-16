@@ -30,18 +30,9 @@ public class ProductController {
                                                                @RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "10") int size) {
 
-        return ResponseEntity.ok(productService.getProductsByCategory(name, page, size));
+        Page<Product> products = productService.getProductsByCategory(name, page, size);
+
+        return ResponseEntity.ok(products);
     }
-//
-//    @GetMapping
-//    public Product getProductById(UUID id) {
-//        return productService.getProductById(id);
-//    }
-//
-//    @GetMapping
-//    public List<Product> getProductsWithDiscount() {
-//        return productService.getProductsWithDiscount();
-//    }
-//
 
 }
