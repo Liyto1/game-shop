@@ -43,6 +43,7 @@ public class Product {
     @Column(columnDefinition = "jsonb", name = "characteristics")
     private Map<String, Object> characteristics;
 
+    //todo: change type
     @Column(name = "price_with_sale")
     private Integer priceWithSale;
 
