@@ -3,6 +3,8 @@ package com.gameshop.www.eCommerce.service;
 import com.gameshop.www.eCommerce.dao.ProductDAO;
 import com.gameshop.www.eCommerce.dao.projection.ProductCatalogProj;
 import com.gameshop.www.eCommerce.dao.projection.ProductSearchProj;
+import com.gameshop.www.eCommerce.model.Brand;
+import com.gameshop.www.eCommerce.model.Category;
 import com.gameshop.www.eCommerce.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
