@@ -14,7 +14,8 @@ import java.util.Date;
 @Service
 public class JWTService {
 
-    private static final String USER_EMAIL = "emai";
+    private static final String USER_EMAIL = "email";
+    private static final String USER_ID = "id";
     @Value("${jwt.algorithm.key}")
     private String algorithmKey;
     @Value("${jwt.issuer}")
@@ -30,14 +31,22 @@ public class JWTService {
 
     public String generateJWT(LocalUser user) {
         return JWT.create()
-                .withClaim(USER_EMAIL, user.getEmail())
+                .withClaim(USER_ID, user.getId().toString())
                 .withIssuer(issuer)
                 .withExpiresAt(new Date(System.currentTimeMillis() + (expireTime * 1000)))
                 .sign(algorithm);
     }
 
-    public String getUserEmail(String token) {
-        return JWT.decode(token).getClaim(USER_EMAIL).asString();
+    public String getUser(String token) {
+        return JWT.decode(token).getClaim(USER_ID).asString();
+    }
+
+    public String generateVerificationJWT(LocalUser user) {
+        return JWT.create()
+                .withClaim(USER_EMAIL, user.getEmail())
+                .withIssuer(issuer)
+                .withExpiresAt(new Date(System.currentTimeMillis() + (expireTime * 1000)))
+                .sign(algorithm);
     }
 
     public boolean isTokenValid(String token) {
