@@ -2,7 +2,7 @@ package com.gameshop.www.eCommerce.dao.projection;
 
 import java.util.UUID;
 
-public interface ProductSearchProj {
+public interface SearchView {
     UUID getId();
 
     String getName();

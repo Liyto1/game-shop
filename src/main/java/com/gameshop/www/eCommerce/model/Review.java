@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "review")
 public class Review {
-  
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)

@@ -1,20 +1,17 @@
-package com.gameshop.www.eCommerce.dao.projection;
-
-import com.gameshop.www.eCommerce.model.Brand;
-import com.gameshop.www.eCommerce.model.Category;
+package com.gameshop.www.eCommerce.dao.projection.catalog;
 
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
-public interface ProductCatalogProj {
+public interface CatalogView {
     UUID getId();
 
     String getName();
 
     String getShortDescription();
 
-    Double getPrice();
+    Integer getPrice();
 
     String getImageUrl();
 
@@ -24,8 +21,8 @@ public interface ProductCatalogProj {
 
     Instant getCreatedAt();
 
-    Brand getBrand();
+    BrandView getBrand();
 
-    Category getCategory();
+    CategoryView getCategory();
 
 }
