@@ -23,6 +23,7 @@ public class GeneratorService {
     private ProductDAO productDAO;
     private BrandDAO brandDAO;
     private CategoryDAO categoryDAO;
+
     public GeneratorService(ProductDAO productDAO, BrandDAO brandDAO, CategoryDAO categoryDAO) {
         this.productDAO = productDAO;
         this.brandDAO = brandDAO;

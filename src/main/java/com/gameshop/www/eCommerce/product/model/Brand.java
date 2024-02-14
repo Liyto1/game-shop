@@ -2,8 +2,6 @@ package com.gameshop.www.eCommerce.product.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.search.annotations.ContainedIn;
-import org.hibernate.search.annotations.Indexed;
 
 import java.util.UUID;
 
@@ -13,7 +11,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Indexed
 @Table(name = "brand")
 public class Brand {
 
@@ -22,7 +19,6 @@ public class Brand {
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @ContainedIn
     @Column(name = "name", nullable = false)
     private String name;
 
