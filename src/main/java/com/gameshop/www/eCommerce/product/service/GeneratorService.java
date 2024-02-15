@@ -16,10 +16,11 @@ import java.util.List;
 public class GeneratorService {
 
 
-    List<String> categories = List.of("Keyboard", "Mouse", "Headset", "Mouse Pad", "Joystick", "Gaming chairs");
+    List<String> categories = List.of("Keyboard", "Mouse", "Headset", "Pad", "Joystick", "Gaming chairs");
     List<String> brands = List.of("Logitech", "Razer", "Acer", "Asus", "Gigabyte", "MSI");
     List<Brand> brandsList = new ArrayList<>();
     List<Category> categoriesList = new ArrayList<>();
+    List<Product> products = new ArrayList<>();
     private ProductDAO productDAO;
     private BrandDAO brandDAO;
     private CategoryDAO categoryDAO;
@@ -32,15 +33,16 @@ public class GeneratorService {
 
     public void generateProducts() {
         long time = System.currentTimeMillis();
-
         Faker faker = new Faker();
-        addBrandAndCategory();
+        if (!brandsList.isEmpty()) {
+            addBrandAndCategory();
+        }
         for (int i = 0; i < 1000; i++) {
             Product product = createProduct(faker);
-            brandDAO.save(product.getBrand());
-            categoryDAO.save(product.getCategory());
-            productDAO.save(product);
+            products.add(product);
         }
+        productDAO.saveAll(products);
+        products.clear();
         long time2 = System.currentTimeMillis();
         long duration = time2 - time;
         System.out.println("Duration: " + duration);
@@ -50,7 +52,7 @@ public class GeneratorService {
         Product product = new Product();
         product.setName(faker.commerce().productName());
         product.setPrice(faker.number().numberBetween(50, 1000));
-        product.setShortDescription((faker.lorem().characters(50, 250)));
+        product.setShortDescription((faker.lorem().characters(50, 100)));
         product.setImageUrl(faker.company().url());
         product.setBrand(brandsList.get(faker.number().numberBetween(0, 6)));
         product.setCategory(categoriesList.get(faker.number().numberBetween(0, 6)));
@@ -67,7 +69,6 @@ public class GeneratorService {
         Category category = new Category();
         category.setName(categories.get(i));
         return category;
-
     }
 
     private void addBrandAndCategory() {
@@ -77,5 +78,7 @@ public class GeneratorService {
             Category category = createCategory(i);
             categoriesList.add(category);
         }
+        brandDAO.saveAll(brandsList);
+        categoryDAO.saveAll(categoriesList);
     }
 }
