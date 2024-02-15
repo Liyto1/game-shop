@@ -17,8 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping("/products")
@@ -29,7 +30,9 @@ public class ProductController {
     private final ProductModelAssembler productModelAssembler;
     private final PagedResourcesAssembler<ProductDTO> pagedResourcesAssembler;
 
-    public ProductController(ProductService productService, ProductMapperService productMapperService, ProductModelAssembler productModelAssembler, PagedResourcesAssembler<ProductDTO> pagedResourcesAssembler) {
+    public ProductController(ProductService productService, ProductMapperService productMapperService,
+                             ProductModelAssembler productModelAssembler,
+                             PagedResourcesAssembler<ProductDTO> pagedResourcesAssembler) {
         this.productService = productService;
         this.productMapperService = productMapperService;
         this.productModelAssembler = productModelAssembler;
@@ -51,12 +54,10 @@ public class ProductController {
 
     @CrossOrigin
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable UUID id) {
-        Optional<Product> product = productService.getProductById(id);
-        if (product.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(product.get());
+    public ProductDTO getProductById(@PathVariable UUID id) {
+        ProductDTO product = productMapperService.toModel(productService.getProductById(id).orElseThrow(() -> new IllegalArgumentException("Incorrect id " + id)));
+        product.add(linkTo(ProductController.class).slash(product.getId()).withSelfRel());
+        return product;
     }
 
     @CrossOrigin
