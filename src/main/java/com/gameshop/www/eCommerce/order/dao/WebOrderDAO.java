@@ -6,6 +6,7 @@ import com.gameshop.www.eCommerce.product.model.Product;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +21,5 @@ public interface WebOrderDAO extends JpaRepository<WebOrder, UUID> {
             "GROUP BY q.product.id " +
             "ORDER BY totalQuantity DESC ")
     List<Product> findProductWithMaxQuantity();
+
 }

@@ -16,6 +16,7 @@ import java.util.List;
 public class GeneratorService {
 
 
+
     List<String> categories = List.of("Keyboard", "Mouse", "Headset", "Pad", "Joystick", "Gaming chairs");
     List<String> brands = List.of("Logitech", "Razer", "Acer", "Asus", "Gigabyte", "MSI");
     List<Brand> brandsList = new ArrayList<>();
@@ -33,6 +34,7 @@ public class GeneratorService {
 
     public void generateProducts() {
         long time = System.currentTimeMillis();
+
         Faker faker = new Faker();
         if (!(brandsList.size() > 1)) {
             addBrandAndCategory();
@@ -43,6 +45,7 @@ public class GeneratorService {
         }
         productDAO.saveAll(products);
         products.clear();
+
         long time2 = System.currentTimeMillis();
         long duration = time2 - time;
         System.out.println("Duration: " + duration);
@@ -69,6 +72,7 @@ public class GeneratorService {
         Category category = new Category();
         category.setName(categories.get(i));
         return category;
+
     }
 
     private void addBrandAndCategory() {
@@ -80,5 +84,6 @@ public class GeneratorService {
         }
         brandDAO.saveAll(brandsList);
         categoryDAO.saveAll(categoriesList);
+
     }
 }

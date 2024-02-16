@@ -54,4 +54,5 @@ public interface ProductDAO extends JpaRepository<Product, UUID>, QuerydslPredic
 
     @Query(value = "SELECT * FROM Product ORDER BY RANDOM() LIMIT 200", nativeQuery = true)
     List<Product> findRandomProducts();
+
 }
