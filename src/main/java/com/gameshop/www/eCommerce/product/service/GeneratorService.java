@@ -34,7 +34,7 @@ public class GeneratorService {
     public void generateProducts() {
         long time = System.currentTimeMillis();
         Faker faker = new Faker();
-        if (!brandsList.isEmpty()) {
+        if (!(brandsList.size() > 1)) {
             addBrandAndCategory();
         }
         for (int i = 0; i < 1000; i++) {
