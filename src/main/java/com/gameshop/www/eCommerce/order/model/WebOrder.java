@@ -32,8 +32,8 @@ public class WebOrder {
     @JoinColumn(name = "user_id", nullable = false)
     private LocalUser user;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "address_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "address_id")
     private Address address;
 
 }

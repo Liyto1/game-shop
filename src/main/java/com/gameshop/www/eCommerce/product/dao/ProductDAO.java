@@ -15,8 +15,10 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.stereotype.Repository;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,4 +51,8 @@ public interface ProductDAO extends JpaRepository<Product, UUID>, QuerydslPredic
     Optional<Product> findByIdCustom(UUID id);
 
     Page<CatalogView> findAllProjectedBy(Predicate predicate, Pageable pageable);
+
+    @Query(value = "SELECT * FROM Product ORDER BY RANDOM() LIMIT 200", nativeQuery = true)
+    List<Product> findRandomProducts();
+
 }
