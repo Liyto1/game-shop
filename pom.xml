@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.5</version>
+        <version>3.2.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.gameshop.www</groupId>
@@ -53,11 +53,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-rest</artifactId>
-			<version>3.2.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>42.7.0</version>
@@ -88,8 +83,26 @@
             <artifactId>datafaker</artifactId>
             <version>2.1.0</version>
         </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hateoas</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-apt</artifactId>
+            <version>5.0.0</version>
+            <scope>provided</scope>
+            <classifier>jakarta</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-jpa</artifactId>
+            <version>5.0.0</version>
+            <scope>provided</scope>
+            <classifier>jakarta</classifier>
+        </dependency>
 
+    </dependencies>
 
     <build>
         <plugins>
