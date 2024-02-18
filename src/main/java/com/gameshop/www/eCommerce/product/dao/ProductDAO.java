@@ -15,7 +15,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.stereotype.Repository;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.Collection;
 import java.util.List;
@@ -45,7 +44,12 @@ public interface ProductDAO extends JpaRepository<Product, UUID>, QuerydslPredic
 
     Page<SearchView> findAllBy(Pageable pageable);
 
-    Optional<CatalogView> findProductById(UUID id);
+    @Query("SELECT q.product.id, SUM(q.quantity) AS totalQuantity " +
+            "FROM WebOrderQuantity q " +
+            "GROUP BY q.product.id " +
+            "ORDER BY totalQuantity DESC ")
+    Page<CatalogView> findProductWithMaxPurchase(Pageable pageable);
+
 
     @Query("select p from Product p where p.id = :id")
     Optional<Product> findByIdCustom(UUID id);

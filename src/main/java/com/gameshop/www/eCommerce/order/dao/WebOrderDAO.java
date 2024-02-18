@@ -16,10 +16,5 @@ import java.util.UUID;
 public interface WebOrderDAO extends JpaRepository<WebOrder, UUID> {
     List<WebOrder> findByUser(LocalUser user);
 
-    @Query("SELECT q.product.id, SUM(q.quantity) AS totalQuantity " +
-            "FROM WebOrderQuantity q " +
-            "GROUP BY q.product.id " +
-            "ORDER BY totalQuantity DESC ")
-    List<Product> findProductWithMaxQuantity();
 
 }

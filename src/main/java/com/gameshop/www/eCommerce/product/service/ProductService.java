@@ -2,6 +2,7 @@ package com.gameshop.www.eCommerce.product.service;
 
 import com.gameshop.www.eCommerce.product.dao.ProductDAO;
 import com.gameshop.www.eCommerce.product.dao.projection.SearchView;
+import com.gameshop.www.eCommerce.product.dao.projection.catalog.CatalogView;
 import com.gameshop.www.eCommerce.product.model.Product;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
@@ -42,6 +43,11 @@ public class ProductService {
 
     public <T> Optional<Product> getProductById(UUID id) {
         return productDAO.findByIdCustom(id);
+    }
+
+    public Page<CatalogView> getMostPurchasedProducts(Integer page, Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Order.desc("purchased")));
+        return productDAO.findProductWithMaxPurchase(pageRequest);
     }
 }
 //todo: recommended and best seller

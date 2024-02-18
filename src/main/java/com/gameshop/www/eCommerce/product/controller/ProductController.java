@@ -2,6 +2,7 @@ package com.gameshop.www.eCommerce.product.controller;
 
 
 import com.gameshop.www.eCommerce.product.dao.projection.SearchView;
+import com.gameshop.www.eCommerce.product.dao.projection.catalog.CatalogView;
 import com.gameshop.www.eCommerce.product.dto.ProductDTO;
 import com.gameshop.www.eCommerce.product.dto.ProductModelAssembler;
 import com.gameshop.www.eCommerce.product.model.Product;
@@ -91,6 +92,18 @@ public class ProductController {
                                                                   @RequestParam("name") String name) {
 
         Page<SearchView> products = productService.searchProductContains(page, size, name);
+        if (products.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(products);
+        }
+        return ResponseEntity.ok(products);
+    }
+
+    @CrossOrigin
+    @GetMapping("/most-purchase")
+    public ResponseEntity<Page<CatalogView>> getMostPurchasedProducts(@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+                                                                       @RequestParam(name = "size", defaultValue = "4", required = false) Integer size) {
+
+        Page<CatalogView> products = productService.getMostPurchasedProducts(page, size);
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(products);
         }
