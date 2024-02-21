@@ -44,7 +44,7 @@ public class ProductController {
     @GetMapping()
     public ResponseEntity<PagedModel<ProductDTO>> getProducts(@QuerydslPredicate(root = Product.class) Predicate predicate,
                                                               @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
-                                                              @RequestParam(name = "size", defaultValue = "12", required = false) Integer size,
+                                                              @RequestParam(name = "size", defaultValue = "15", required = false) Integer size,
                                                               @RequestParam(name = "sort", defaultValue = "UNSORTED", required = false)
                                                               String sort, Pageable pageable) {
         Page<ProductDTO> products = productService.getProducts(predicate, pageable)

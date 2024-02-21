@@ -44,11 +44,7 @@ public interface ProductDAO extends JpaRepository<Product, UUID>, QuerydslPredic
 
     Page<SearchView> findAllBy(Pageable pageable);
 
-    @Query("SELECT q.product.id, SUM(q.quantity) AS totalQuantity " +
-            "FROM WebOrderQuantity q " +
-            "GROUP BY q.product.id " +
-            "ORDER BY totalQuantity DESC ")
-    Page<CatalogView> findProductWithMaxPurchase(Pageable pageable);
+
 
 
     @Query("select p from Product p where p.id = :id")
