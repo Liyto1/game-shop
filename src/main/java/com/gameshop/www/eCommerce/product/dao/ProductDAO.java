@@ -14,8 +14,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +29,7 @@ public interface ProductDAO extends JpaRepository<Product, UUID>, QuerydslPredic
     @Override
     default void customize(QuerydslBindings bindings, QProduct root) {
         bindings.bind(String.class).all((StringPath path, Collection<? extends String>
-    value) -> {
+                value) -> {
             BooleanBuilder predicate = new BooleanBuilder();
             for (String s : value) {
                 predicate.or(path.containsIgnoreCase(s));
@@ -45,7 +45,8 @@ public interface ProductDAO extends JpaRepository<Product, UUID>, QuerydslPredic
 
     Page<SearchView> findAllBy(Pageable pageable);
 
-    Optional<CatalogView> findProductById(UUID id);
+    @Query("SELECT p FROM Product p WHERE p.id IN :ids")
+    List<Product> findAllByIdInOrder(@Param("ids") List<UUID> ids);
 
     @Query("select p from Product p where p.id = :id")
     Optional<Product> findByIdCustom(UUID id);

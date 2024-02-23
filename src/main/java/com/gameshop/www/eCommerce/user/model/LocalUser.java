@@ -2,7 +2,15 @@ package com.gameshop.www.eCommerce.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gameshop.www.eCommerce.auth.model.VerificationToken;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
