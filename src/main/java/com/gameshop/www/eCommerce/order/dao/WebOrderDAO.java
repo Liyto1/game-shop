@@ -12,4 +12,5 @@ import java.util.UUID;
 public interface WebOrderDAO extends JpaRepository<WebOrder, UUID> {
     List<WebOrder> findByUser(LocalUser user);
 
+
 }
