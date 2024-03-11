@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -54,7 +55,7 @@ public class ProductController {
     @GetMapping()
     public ResponseEntity<PagedModel<ProductDTO>> getProducts(@QuerydslPredicate(root = Product.class) Predicate predicate,
                                                               @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
-                                                              @RequestParam(name = "size", defaultValue = "12", required = false) Integer size,
+                                                              @RequestParam(name = "size", defaultValue = "15", required = false) Integer size,
                                                               @RequestParam(name = "sort", defaultValue = "UNSORTED", required = false)
                                                               String sort,
                                                               @RequestParam Map<String, String> allRequestParams,
@@ -114,6 +115,15 @@ public class ProductController {
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(products);
         }
+        return ResponseEntity.ok(products);
+    }
+
+    @CrossOrigin
+    @GetMapping("/most-purchase")
+    public ResponseEntity<List<Product>> getMostPurchasedProducts() {
+
+        List<Product> products = productService.getMostPurchasedProducts();
+
         return ResponseEntity.ok(products);
     }
 

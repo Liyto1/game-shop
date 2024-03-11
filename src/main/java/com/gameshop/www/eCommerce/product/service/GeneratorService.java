@@ -22,6 +22,7 @@ public class GeneratorService {
     private final ProductDAO productDAO;
     private final BrandDAO brandDAO;
     private final CategoryDAO categoryDAO;
+
     List<String> categories = List.of("Keyboard", "Mouse", "Headset", "Pad", "Joystick", "Gaming chairs");
     List<String> brands = List.of("Logitech", "Razer", "Acer", "Asus", "Gigabyte", "MSI");
     List<Brand> brandsList = new ArrayList<>();

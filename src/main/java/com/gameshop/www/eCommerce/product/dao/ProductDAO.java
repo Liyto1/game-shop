@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -44,7 +45,8 @@ public interface ProductDAO extends JpaRepository<Product, UUID>, QuerydslPredic
 
     Page<SearchView> findAllBy(Pageable pageable);
 
-    Optional<CatalogView> findProductById(UUID id);
+    @Query("SELECT p FROM Product p WHERE p.id IN :ids")
+    List<Product> findAllByIdInOrder(@Param("ids") List<UUID> ids);
 
     @Query("select p from Product p where p.id = :id")
     Optional<Product> findByIdCustom(UUID id);
