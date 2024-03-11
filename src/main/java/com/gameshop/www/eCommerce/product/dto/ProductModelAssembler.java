@@ -22,6 +22,6 @@ public class ProductModelAssembler extends RepresentationModelAssemblerSupport<P
 
     @Override
     public CollectionModel<ProductDTO> toCollectionModel(Iterable<? extends ProductDTO> entities) {
-        return super.toCollectionModel(entities).add(linkTo(methodOn(ProductController.class).getProducts(null, null, null, null, null)).withSelfRel());
+        return super.toCollectionModel(entities).add(linkTo(methodOn(ProductController.class).getProducts(null, null, null, null, null, null)).withSelfRel());
     }
 }

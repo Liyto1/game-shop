@@ -10,8 +10,8 @@ import java.util.List;
 
 @Service
 public class UserGeneratorService {
-    private LocalUserDAO localUserDAO;
     List<LocalUser> users = new ArrayList<>();
+    private LocalUserDAO localUserDAO;
 
     public UserGeneratorService(LocalUserDAO localUserDAO) {
         this.localUserDAO = localUserDAO;

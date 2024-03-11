@@ -5,26 +5,28 @@ import com.gameshop.www.eCommerce.product.dao.CategoryDAO;
 import com.gameshop.www.eCommerce.product.dao.ProductDAO;
 import com.gameshop.www.eCommerce.product.model.Brand;
 import com.gameshop.www.eCommerce.product.model.Category;
+import com.gameshop.www.eCommerce.product.model.Inventory;
 import com.gameshop.www.eCommerce.product.model.Product;
 import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GeneratorService {
 
 
-
+    private final ProductDAO productDAO;
+    private final BrandDAO brandDAO;
+    private final CategoryDAO categoryDAO;
     List<String> categories = List.of("Keyboard", "Mouse", "Headset", "Pad", "Joystick", "Gaming chairs");
     List<String> brands = List.of("Logitech", "Razer", "Acer", "Asus", "Gigabyte", "MSI");
     List<Brand> brandsList = new ArrayList<>();
     List<Category> categoriesList = new ArrayList<>();
     List<Product> products = new ArrayList<>();
-    private ProductDAO productDAO;
-    private BrandDAO brandDAO;
-    private CategoryDAO categoryDAO;
 
     public GeneratorService(ProductDAO productDAO, BrandDAO brandDAO, CategoryDAO categoryDAO) {
         this.productDAO = productDAO;
@@ -59,6 +61,9 @@ public class GeneratorService {
         product.setImageUrl(faker.company().url());
         product.setBrand(brandsList.get(faker.number().numberBetween(0, 6)));
         product.setCategory(categoriesList.get(faker.number().numberBetween(0, 6)));
+        product.setCharacteristics(createCharacteristics(faker, product.getCategory().getName()));
+        Inventory inventory = createInventory(faker, product);
+        product.setInventory(inventory);
         return product;
     }
 
@@ -85,5 +90,38 @@ public class GeneratorService {
         brandDAO.saveAll(brandsList);
         categoryDAO.saveAll(categoriesList);
 
+    }
+
+    private Map<String, String> createCharacteristics(Faker faker, String category) {
+        Map<String, String> characteristics = new HashMap<>();
+
+        switch (category) {
+            case "Mouse":
+                characteristics.put("DPI", String.valueOf(faker.options().option(800, 1600, 2200, 600, 1200)));
+                characteristics.put("Buttons", String.valueOf(faker.number().numberBetween(2, 8)));
+                characteristics.put("Wireless", String.valueOf(faker.bool().bool()));
+                characteristics.put("Silent", String.valueOf(faker.bool().bool()));
+                break;
+            case "Keyboard":
+                characteristics.put("Layout", faker.options().option("QWERTY", "AZERTY", "QWERTZ"));
+                characteristics.put("Backlit", String.valueOf(faker.bool().bool()));
+                characteristics.put("Wireless", String.valueOf(faker.bool().bool()));
+                characteristics.put("Size", faker.options().option("100%", "75%", "60%"));
+                break;
+            case "Headphones":
+                characteristics.put("Type", faker.options().option("In-Ear", "On-Ear", "Over-Ear"));
+                characteristics.put("Wireless", String.valueOf(faker.bool().bool()));
+                characteristics.put("Noise Cancelling", String.valueOf(faker.bool().bool()));
+                break;
+        }
+
+        return characteristics;
+    }
+
+    private Inventory createInventory(Faker faker, Product product) {
+        Inventory inventory = new Inventory();
+        inventory.setProduct(product);
+        inventory.setQuantity(faker.number().numberBetween(0, 100));
+        return inventory;
     }
 }
