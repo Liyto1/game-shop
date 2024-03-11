@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -43,14 +41,15 @@ public class Product {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb", name = "characteristics")
-    private Map<String, Object> characteristics;
+    @ElementCollection
+    @MapKeyColumn(name = "key")
+    @Column(name = "value")
+    private Map<String, String> characteristics;
 
     @Column(name = "price_with_sale")
     private Integer priceWithSale;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE, optional = false, orphanRemoval = true)
+    @OneToOne(mappedBy = "product", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, optional = false, orphanRemoval = true)
     private Inventory inventory;
 
 

@@ -6,6 +6,7 @@ import com.gameshop.www.eCommerce.product.model.Inventory;
 import com.gameshop.www.eCommerce.product.model.Review;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,7 +29,7 @@ public class ProductDTO extends RepresentationModel<ProductDTO> {
     private Integer price;
     private String imageUrl;
     private Instant createdAt;
-    private Map<String, Object> characteristics;
+    private Map<String, String> characteristics;
     private Integer priceWithSale;
     private Inventory inventory;
     private Brand brand;
