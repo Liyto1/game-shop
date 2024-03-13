@@ -8,5 +8,4 @@ import java.util.UUID;
 
 @Repository
 public interface CategoryDAO extends JpaRepository<Category, UUID> {
-    Category findByNameIgnoreCase(String name);
 }

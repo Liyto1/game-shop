@@ -38,20 +38,11 @@ public interface ProductDAO extends JpaRepository<Product, UUID>, QuerydslPredic
         });
     }
 
-
-    Page<SearchView> findByCategory_NameIgnoreCase(String name, Pageable pageable);
-
-    Page<SearchView> findByNameContainsIgnoreCase(String name, Pageable pageable);
-
-    Page<SearchView> findAllBy(Pageable pageable);
-
     @Query("SELECT p FROM Product p WHERE p.id IN :ids")
     List<Product> findAllByIdInOrder(@Param("ids") List<UUID> ids);
 
     @Query("select p from Product p where p.id = :id")
     Optional<Product> findByIdCustom(UUID id);
-
-    Page<CatalogView> findAllProjectedBy(Predicate predicate, Pageable pageable);
 
     @Query(value = "SELECT * FROM Product ORDER BY RANDOM() LIMIT 200", nativeQuery = true)
     List<Product> findRandomProducts();

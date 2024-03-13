@@ -36,21 +36,6 @@ public class ProductService {
         return productDAO.findAll(builder, pageable);
     }
 
-    public Page<SearchView> getProductsByCategory(String name, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return productDAO.findByCategory_NameIgnoreCase(name, pageRequest);
-    }
-
-    public Page<SearchView> getRecentlyAddProducts(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
-        return productDAO.findAllBy(pageRequest);
-    }
-
-    public Page<SearchView> searchProductContains(int page, int size, String name) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return productDAO.findByNameContainsIgnoreCase(name, pageRequest);
-    }
-
     public <T> Optional<Product> getProductById(UUID id) {
         return productDAO.findByIdCustom(id);
     }
@@ -65,7 +50,7 @@ public class ProductService {
                     builder.and(QProduct.product.characteristics.contains(key, e.getValue()));
                 });
         return builder;
-  
+    }
     public List<Product> getMostPurchasedProducts() {
         List<PurchaseProj> productPurchases = webOrderQuantityDAO.findTopPurchasedProducts();
         List<UUID> ids = productPurchases.stream()
@@ -75,4 +60,4 @@ public class ProductService {
         return productDAO.findAllByIdInOrder(ids);
     }
 }
-//todo: recommended and best seller
+//todo: recommended
