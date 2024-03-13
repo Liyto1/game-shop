@@ -65,7 +65,7 @@ public class ProductService {
                     builder.and(QProduct.product.characteristics.contains(key, e.getValue()));
                 });
         return builder;
-  
+    }
     public List<Product> getMostPurchasedProducts() {
         List<PurchaseProj> productPurchases = webOrderQuantityDAO.findTopPurchasedProducts();
         List<UUID> ids = productPurchases.stream()
