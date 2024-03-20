@@ -83,7 +83,6 @@ public class ProductController {
     }
 
 
-
     @CrossOrigin
     @GetMapping("/most-purchase")
     public ResponseEntity<List<Product>> getMostPurchasedProducts() {

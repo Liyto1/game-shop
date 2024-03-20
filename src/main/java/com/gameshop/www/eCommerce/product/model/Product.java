@@ -1,5 +1,6 @@
 package com.gameshop.www.eCommerce.product.model;
 
+import com.gameshop.www.eCommerce.review.model.Review;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -52,6 +53,11 @@ public class Product {
     @OneToOne(mappedBy = "product", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, optional = false, orphanRemoval = true)
     private Inventory inventory;
 
+    @Column(name = "is_sale")
+    private Boolean isSale;
+
+    @Column(name = "is_present")
+    private Boolean isPresent;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "brand_id", nullable = false)

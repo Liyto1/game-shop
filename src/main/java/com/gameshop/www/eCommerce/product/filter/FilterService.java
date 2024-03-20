@@ -8,6 +8,7 @@ import com.querydsl.core.types.Predicate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,35 +33,23 @@ public class FilterService {
         Set<String> brands = brandDAO.findAll().stream()
                 .map(Brand::getName).collect(Collectors.toSet());
 
-        Map<String, Set<String>> characteristics = filteredProducts.stream()
-                .flatMap(product -> product.getCharacteristics().entrySet().stream())
-                .collect(Collectors.groupingBy(
-                        Map.Entry::getKey,
-                        Collectors.mapping(entry -> String.valueOf(entry.getValue()), Collectors.toSet())
-                ));
+        Map<String, Set<String>> characteristics = new HashMap<>();
+        int minPrice = Integer.MAX_VALUE;
 
-        Set<String> selectedCharacteristics = filteredProducts.stream()
-                .flatMap(p -> p.getCharacteristics().keySet().stream())
-                .collect(Collectors.toSet());
-        List<Product> productsWithSelectedCharacteristics = filteredProducts.stream()
-                .filter(p -> p.getCharacteristics().keySet().stream()
-                        .anyMatch(selectedCharacteristics::contains))
-                .toList();
-        int minPrice = productsWithSelectedCharacteristics.stream()
-                .mapToInt(Product::getPrice)
-                .min().orElse(0);
+        int maxPrice = Integer.MIN_VALUE;
+        Set<Boolean> isPresentSet = new HashSet<>();
+        Set<Boolean> isSaleSet = new HashSet<>();
 
-        int maxPrice = productsWithSelectedCharacteristics.stream()
-                .mapToInt(Product::getPrice)
-                .max().orElse(0);
+        for (Product product : filteredProducts) {
+            product.getCharacteristics().forEach((key, value) ->
+                    characteristics.computeIfAbsent(key, k -> new HashSet<>()).add(String.valueOf(value)));
+            int price = product.getPrice();
+            if (price < minPrice) minPrice = price;
+            if (price > maxPrice) maxPrice = price;
 
-        Set<Boolean> isPresentSet = productsWithSelectedCharacteristics.stream()
-                .map(product -> product.getInventory() != null && product.getInventory().getQuantity() > 0)
-                .collect(Collectors.toSet());
-
-        Set<Boolean> isSaleSet = productsWithSelectedCharacteristics.stream()
-                .map(product -> product.getPriceWithSale() != null)
-                .collect(Collectors.toSet());
+            isPresentSet.add(product.getInventory() != null && product.getInventory().getQuantity() > 0);
+            isSaleSet.add(product.getPriceWithSale() != null && product.getPriceWithSale() > 0);
+        }
 
         Map<String, Integer> prices = new HashMap<>();
         prices.put("min_price", minPrice);
