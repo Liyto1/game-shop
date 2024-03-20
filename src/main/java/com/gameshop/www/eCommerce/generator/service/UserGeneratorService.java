@@ -1,4 +1,4 @@
-package com.gameshop.www.eCommerce.user.service;
+package com.gameshop.www.eCommerce.generator.service;
 
 import com.gameshop.www.eCommerce.user.dao.LocalUserDAO;
 import com.gameshop.www.eCommerce.user.model.LocalUser;

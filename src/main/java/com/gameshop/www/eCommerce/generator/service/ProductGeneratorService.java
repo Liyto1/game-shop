@@ -1,4 +1,4 @@
-package com.gameshop.www.eCommerce.product.service;
+package com.gameshop.www.eCommerce.generator.service;
 
 import com.gameshop.www.eCommerce.product.dao.BrandDAO;
 import com.gameshop.www.eCommerce.product.dao.CategoryDAO;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class GeneratorService {
+public class ProductGeneratorService {
 
 
     private final ProductDAO productDAO;
@@ -29,7 +29,7 @@ public class GeneratorService {
     List<Category> categoriesList = new ArrayList<>();
     List<Product> products = new ArrayList<>();
 
-    public GeneratorService(ProductDAO productDAO, BrandDAO brandDAO, CategoryDAO categoryDAO) {
+    public ProductGeneratorService(ProductDAO productDAO, BrandDAO brandDAO, CategoryDAO categoryDAO) {
         this.productDAO = productDAO;
         this.brandDAO = brandDAO;
         this.categoryDAO = categoryDAO;
@@ -59,7 +59,7 @@ public class GeneratorService {
         product.setName(faker.commerce().productName());
         product.setPrice(faker.number().numberBetween(50, 1000));
         product.setShortDescription((faker.lorem().characters(50, 100)));
-        product.setImageUrl(faker.company().url());
+        product.setImageUrl(faker.internet().url());
         product.setBrand(brandsList.get(faker.number().numberBetween(0, 6)));
         product.setCategory(categoriesList.get(faker.number().numberBetween(0, 6)));
         product.setCharacteristics(createCharacteristics(faker, product.getCategory().getName()));
@@ -100,19 +100,19 @@ public class GeneratorService {
             case "Mouse":
                 characteristics.put("DPI", String.valueOf(faker.options().option(800, 1600, 2200, 600, 1200)));
                 characteristics.put("Buttons", String.valueOf(faker.number().numberBetween(2, 8)));
-                characteristics.put("Wireless", String.valueOf(faker.bool().bool()));
-                characteristics.put("Silent", String.valueOf(faker.bool().bool()));
+                characteristics.put("Interface", faker.options().option("USB", "Bluetooth", "2,4 GHz"));
+                characteristics.put("Color", faker.options().option("Red", "White", "Black", "Blue", "Yellow"));
                 break;
             case "Keyboard":
                 characteristics.put("Layout", faker.options().option("QWERTY", "AZERTY", "QWERTZ"));
-                characteristics.put("Backlit", String.valueOf(faker.bool().bool()));
-                characteristics.put("Wireless", String.valueOf(faker.bool().bool()));
+                characteristics.put("Type", faker.options().option("Hybrid mechanical-membrane", "Optical-mechanical", "Scissors", "Mechanical", "Membrane"));
+                characteristics.put("Interface", faker.options().option("USB", "Bluetooth", "2,4 GHz"));
                 characteristics.put("Size", faker.options().option("100%", "75%", "60%"));
                 break;
             case "Headphones":
                 characteristics.put("Type", faker.options().option("In-Ear", "On-Ear", "Over-Ear"));
-                characteristics.put("Wireless", String.valueOf(faker.bool().bool()));
-                characteristics.put("Noise Cancelling", String.valueOf(faker.bool().bool()));
+                characteristics.put("Connection type", faker.options().option("Wired", "Wireless", "Combined"));
+                characteristics.put("Noise Cancelling", faker.options().option("With noise cancelling", "Without noise cancelling"));
                 break;
         }
 

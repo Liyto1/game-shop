@@ -1,4 +1,4 @@
-package com.gameshop.www.eCommerce.order.service;
+package com.gameshop.www.eCommerce.generator.service;
 
 import com.gameshop.www.eCommerce.order.dao.WebOrderDAO;
 import com.gameshop.www.eCommerce.order.dao.WebOrderQuantityDAO;

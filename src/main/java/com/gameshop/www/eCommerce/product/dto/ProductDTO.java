@@ -3,7 +3,7 @@ package com.gameshop.www.eCommerce.product.dto;
 import com.gameshop.www.eCommerce.product.model.Brand;
 import com.gameshop.www.eCommerce.product.model.Category;
 import com.gameshop.www.eCommerce.product.model.Inventory;
-import com.gameshop.www.eCommerce.product.model.Review;
+import com.gameshop.www.eCommerce.review.model.Review;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

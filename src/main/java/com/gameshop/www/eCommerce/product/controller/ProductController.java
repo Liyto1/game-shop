@@ -1,8 +1,6 @@
 package com.gameshop.www.eCommerce.product.controller;
 
 
-import com.gameshop.www.eCommerce.product.dao.ProductDAO;
-import com.gameshop.www.eCommerce.product.dao.projection.SearchView;
 import com.gameshop.www.eCommerce.product.dto.ProductDTO;
 import com.gameshop.www.eCommerce.product.dto.ProductModelAssembler;
 import com.gameshop.www.eCommerce.product.filter.FilterService;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
-
 import java.util.UUID;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -61,8 +58,10 @@ public class ProductController {
                                                               String sort,
                                                               @RequestParam Map<String, String> allRequestParams,
                                                               Pageable pageable) {
+
         Page<ProductDTO> products = productService.getProducts(predicate, pageable, allRequestParams)
                 .map(productMapperService::toModel);
+
         PagedModel<ProductDTO> pagedModel = pagedResourcesAssembler.toModel(products, productModelAssembler);
         return new ResponseEntity<>(pagedModel, HttpStatus.OK);
     }
@@ -73,6 +72,7 @@ public class ProductController {
         ProductDTO product = productMapperService.toModel(productService.getProductById(id).orElseThrow(() -> new IllegalArgumentException("Incorrect id " + id)));
         product.add(linkTo(ProductController.class).slash(product.getId()).withSelfRel());
         return product;
+        //todo: check rest doc response
     }
 
     @CrossOrigin
@@ -82,42 +82,6 @@ public class ProductController {
         return ResponseEntity.ok(productFilterDTO);
     }
 
-    @CrossOrigin
-    @GetMapping("/category/{categoryName}")
-    public ResponseEntity<Page<SearchView>> getProductsByCategory(@PathVariable String categoryName,
-                                                                  @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
-                                                                  @RequestParam(name = "size", defaultValue = "10", required = false) Integer size) {
-
-        Page<SearchView> products = productService.getProductsByCategory(categoryName, page, size);
-        if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(products);
-        }
-        return ResponseEntity.ok(products);
-    }
-
-    @CrossOrigin
-    @GetMapping("/recently")
-    public ResponseEntity<Page<SearchView>> getRecentlyAddProducts(@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
-                                                                   @RequestParam(name = "size", defaultValue = "4", required = false) Integer size) {
-        Page<SearchView> products = productService.getRecentlyAddProducts(page, size);
-        if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(products);
-        }
-        return ResponseEntity.ok(products);
-    }
-
-    @CrossOrigin
-    @GetMapping("/search")
-    public ResponseEntity<Page<SearchView>> searchProductContains(@RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
-                                                                  @RequestParam(name = "size", defaultValue = "4", required = false) Integer size,
-                                                                  @RequestParam("name") String name) {
-
-        Page<SearchView> products = productService.searchProductContains(page, size, name);
-        if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(products);
-        }
-        return ResponseEntity.ok(products);
-    }
 
     @CrossOrigin
     @GetMapping("/most-purchase")

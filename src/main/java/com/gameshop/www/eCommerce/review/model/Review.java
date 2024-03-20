@@ -1,6 +1,7 @@
-package com.gameshop.www.eCommerce.product.model;
+package com.gameshop.www.eCommerce.review.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gameshop.www.eCommerce.product.model.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
