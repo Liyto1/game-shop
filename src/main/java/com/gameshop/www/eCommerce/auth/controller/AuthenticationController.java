@@ -39,8 +39,9 @@ public class AuthenticationController {
             log.info("User registered successfully");
             return ResponseEntity.ok().build();
         } catch (UserAlreadyExistException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exist");
         } catch (EmailFailureException e) {
+            log.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
