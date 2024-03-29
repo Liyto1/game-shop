@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +24,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -85,9 +88,12 @@ public class ProductController {
 
     @CrossOrigin
     @GetMapping("/most-purchase")
-    public ResponseEntity<List<Product>> getMostPurchasedProducts() {
+    public ResponseEntity<List<ProductDTO>> getMostPurchasedProducts() {
 
-        List<Product> products = productService.getMostPurchasedProducts();
+        List<ProductDTO> products = productService.getMostPurchasedProducts()
+                .stream()
+                .map(productMapperService::toModel)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(products);
     }

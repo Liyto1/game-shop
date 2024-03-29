@@ -10,16 +10,11 @@ public class ProductMapperService {
         ProductDTO productDTO = new ProductDTO();
         productDTO.setId(product.getId());
         productDTO.setName(product.getName());
-        productDTO.setShortDescription(product.getShortDescription());
         productDTO.setPrice(product.getPrice());
         productDTO.setImageUrl(product.getImageUrl());
         productDTO.setCreatedAt(product.getCreatedAt());
-        productDTO.setCharacteristics(product.getCharacteristics());
         productDTO.setPriceWithSale(product.getPriceWithSale());
-        productDTO.setInventory(product.getInventory());
-        productDTO.setBrand(product.getBrand());
-        productDTO.setCategory(product.getCategory());
-        productDTO.setReviews(product.getReviews());
+        productDTO.setBrand(product.getBrand().getName());
         return productDTO;
     }
 }

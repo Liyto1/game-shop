@@ -7,6 +7,9 @@ import com.gameshop.www.eCommerce.product.model.Brand;
 import com.gameshop.www.eCommerce.product.model.Category;
 import com.gameshop.www.eCommerce.product.model.Inventory;
 import com.gameshop.www.eCommerce.product.model.Product;
+import com.gameshop.www.eCommerce.review.dao.ReviewDAO;
+import com.gameshop.www.eCommerce.review.model.Review;
+import jakarta.transaction.Transactional;
 import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,7 @@ public class ProductGeneratorService {
     private final ProductDAO productDAO;
     private final BrandDAO brandDAO;
     private final CategoryDAO categoryDAO;
+    private final ReviewDAO reviewDAO;
 
     List<String> categories = List.of("Keyboard", "Mouse", "Headset", "Pad", "Joystick", "Gaming chairs");
     List<String> brands = List.of("Logitech", "Razer", "Acer", "Asus", "Gigabyte", "MSI");
@@ -29,10 +33,11 @@ public class ProductGeneratorService {
     List<Category> categoriesList = new ArrayList<>();
     List<Product> products = new ArrayList<>();
 
-    public ProductGeneratorService(ProductDAO productDAO, BrandDAO brandDAO, CategoryDAO categoryDAO) {
+    public ProductGeneratorService(ProductDAO productDAO, BrandDAO brandDAO, CategoryDAO categoryDAO, ReviewDAO reviewDAO) {
         this.productDAO = productDAO;
         this.brandDAO = brandDAO;
         this.categoryDAO = categoryDAO;
+        this.reviewDAO = reviewDAO;
     }
 
     public void generateProducts() {
@@ -44,6 +49,7 @@ public class ProductGeneratorService {
         }
         for (int i = 0; i < 1000; i++) {
             Product product = createProduct(faker);
+            product.updateAvgRate();
             products.add(product);
         }
         productDAO.saveAll(products);
@@ -54,7 +60,8 @@ public class ProductGeneratorService {
         System.out.println("Duration: " + duration);
     }
 
-    private Product createProduct(Faker faker) {
+    @Transactional
+    protected Product createProduct(Faker faker) {
         Product product = new Product();
         product.setName(faker.commerce().productName());
         product.setPrice(faker.number().numberBetween(50, 1000));
@@ -63,6 +70,7 @@ public class ProductGeneratorService {
         product.setBrand(brandsList.get(faker.number().numberBetween(0, 6)));
         product.setCategory(categoriesList.get(faker.number().numberBetween(0, 6)));
         product.setCharacteristics(createCharacteristics(faker, product.getCategory().getName()));
+        product.setReviews(generateReviews(faker, product));
         Inventory inventory = createInventory(faker, product);
         product.setInventory(inventory);
         return product;
@@ -124,5 +132,17 @@ public class ProductGeneratorService {
         inventory.setProduct(product);
         inventory.setQuantity(faker.number().numberBetween(0, 100));
         return inventory;
+    }
+
+    public List<Review> generateReviews(Faker faker, Product product) {
+        List<Review> reviews = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            Review review = new Review();
+            review.setComment(faker.lorem().characters(5, 25));
+            review.setRate(faker.random().nextInt(3, 5));
+            reviews.add(review);
+            review.setProduct(product);
+        }
+        return reviews;
     }
 }

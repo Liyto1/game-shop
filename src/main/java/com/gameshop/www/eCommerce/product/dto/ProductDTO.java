@@ -25,14 +25,22 @@ import java.util.UUID;
 public class ProductDTO extends RepresentationModel<ProductDTO> {
     private UUID id;
     private String name;
-    private String shortDescription;
     private Integer price;
     private String imageUrl;
     private Instant createdAt;
-    private Map<String, String> characteristics;
     private Integer priceWithSale;
-    private Inventory inventory;
-    private Brand brand;
-    private List<Review> reviews = new ArrayList<>();
-    private Category category;
+    private String brand;
 }
+/*
+export interface Props {
+  topLabel?: string;
+  bottomLabel?: string;
+  brand: name: string;
+  name: string;
+  shortDescription: string;
+  price: number;
+  priceWithSale?: number;
+  imageUrl: string;
+  id: string;
+}
+ */

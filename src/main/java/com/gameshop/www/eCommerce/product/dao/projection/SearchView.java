@@ -1,5 +1,7 @@
 package com.gameshop.www.eCommerce.product.dao.projection;
 
+import com.gameshop.www.eCommerce.product.dao.projection.catalog.BrandView;
+
 import java.util.UUID;
 
 public interface SearchView {
@@ -7,7 +9,11 @@ public interface SearchView {
 
     String getName();
 
-    Double getPrice();
+    String getShortDescription();
+
+    BrandView getBrand();
+
+    Integer getPrice();
 
     String getImageUrl();
 
