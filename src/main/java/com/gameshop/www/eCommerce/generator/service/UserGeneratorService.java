@@ -12,6 +12,7 @@ import java.util.List;
 public class UserGeneratorService {
     List<LocalUser> users = new ArrayList<>();
     private LocalUserDAO localUserDAO;
+    private final String[] photos = new String[] {"http://surl.li/sdtvj", "http://surl.li/sdtvh"};
 
     public UserGeneratorService(LocalUserDAO localUserDAO) {
         this.localUserDAO = localUserDAO;
@@ -35,6 +36,7 @@ public class UserGeneratorService {
         user.setPassword(faker.internet().password());
         user.setPhoneNumber(faker.phoneNumber().cellPhone());
         user.setIsEmailVerified(true);
+        user.setUserPhoto(photos[faker.random().nextInt(0,1)]);
         return user;
     }
 }

@@ -1,7 +1,9 @@
 package com.gameshop.www.eCommerce.product.controller;
 
 
-import com.gameshop.www.eCommerce.product.dto.ProductDTO;
+import com.gameshop.www.eCommerce.product.dao.ProductDAO;
+import com.gameshop.www.eCommerce.product.dto.ProductCatalogDTO;
+import com.gameshop.www.eCommerce.product.dto.ProductDetailDTO;
 import com.gameshop.www.eCommerce.product.dto.ProductModelAssembler;
 import com.gameshop.www.eCommerce.product.filter.FilterService;
 import com.gameshop.www.eCommerce.product.filter.ProductFilterDTO;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -39,43 +41,44 @@ public class ProductController {
     private final ProductService productService;
     private final ProductMapperService productMapperService;
     private final ProductModelAssembler productModelAssembler;
-    private final PagedResourcesAssembler<ProductDTO> pagedResourcesAssembler;
+    private final PagedResourcesAssembler<ProductCatalogDTO> pagedResourcesAssembler;
     private final FilterService filterService;
+    private final ProductDAO productDAO;
 
     public ProductController(ProductService productService, ProductMapperService productMapperService,
                              ProductModelAssembler productModelAssembler,
-                             PagedResourcesAssembler<ProductDTO> pagedResourcesAssembler, FilterService filterService) {
+                             PagedResourcesAssembler<ProductCatalogDTO> pagedResourcesAssembler,
+                             FilterService filterService,
+                             ProductDAO productDAO) {
         this.productService = productService;
         this.productMapperService = productMapperService;
         this.productModelAssembler = productModelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filterService = filterService;
+        this.productDAO = productDAO;
     }
 
     @CrossOrigin
     @GetMapping()
-    public ResponseEntity<PagedModel<ProductDTO>> getProducts(@QuerydslPredicate(root = Product.class) Predicate predicate,
-                                                              @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
-                                                              @RequestParam(name = "size", defaultValue = "15", required = false) Integer size,
-                                                              @RequestParam(name = "sort", defaultValue = "UNSORTED", required = false)
-                                                              String sort,
-                                                              @RequestParam Map<String, String> allRequestParams,
-                                                              Pageable pageable) {
+    public ResponseEntity<PagedModel<ProductCatalogDTO>> getProducts(@QuerydslPredicate(root = Product.class) Predicate predicate,
+                                                                     @RequestParam(required = false) Map<String, String> allRequestParams,
+                                                                     Pageable pageable) {
 
-        Page<ProductDTO> products = productService.getProducts(predicate, pageable, allRequestParams)
+        Page<ProductCatalogDTO> products = productService.getProducts(predicate, pageable, allRequestParams)
                 .map(productMapperService::toModel);
-
-        PagedModel<ProductDTO> pagedModel = pagedResourcesAssembler.toModel(products, productModelAssembler);
+        PagedModel<ProductCatalogDTO> pagedModel = pagedResourcesAssembler.toModel(products, productModelAssembler);
         return new ResponseEntity<>(pagedModel, HttpStatus.OK);
     }
 
     @CrossOrigin
     @GetMapping("/{id}")
-    public ProductDTO getProductById(@PathVariable UUID id) {
-        ProductDTO product = productMapperService.toModel(productService.getProductById(id).orElseThrow(() -> new IllegalArgumentException("Incorrect id " + id)));
-        product.add(linkTo(ProductController.class).slash(product.getId()).withSelfRel());
-        return product;
-        //todo: check rest doc response
+    public ResponseEntity<EntityModel<ProductDetailDTO>> getProductById(@PathVariable UUID id) {
+
+        return productService.getProductById(id)
+                .map(productMapperService::toModelDetail)
+                .map(productModelAssembler::toDetailModel)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @CrossOrigin
@@ -88,14 +91,14 @@ public class ProductController {
 
     @CrossOrigin
     @GetMapping("/most-purchase")
-    public ResponseEntity<List<ProductDTO>> getMostPurchasedProducts() {
-
-        List<ProductDTO> products = productService.getMostPurchasedProducts()
+    public ResponseEntity<CollectionModel<ProductCatalogDTO>> getMostPurchasedProducts() {
+        List<ProductCatalogDTO> products = productService.getMostPurchasedProducts()
                 .stream()
                 .map(productMapperService::toModel)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(products);
+        CollectionModel<ProductCatalogDTO> collectionModel = productModelAssembler.toCollectionModel(products);
+        return ResponseEntity.ok(collectionModel);
     }
 
 

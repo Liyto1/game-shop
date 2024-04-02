@@ -32,6 +32,9 @@ public class Product {
     @Column(name = "short_description")
     private String shortDescription;
 
+    @Column(name = "long_description")
+    private String longDescription;
+
     @Column(name = "price", nullable = false)
     private Integer price;
 
