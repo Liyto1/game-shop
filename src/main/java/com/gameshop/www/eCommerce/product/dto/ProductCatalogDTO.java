@@ -18,6 +18,7 @@ import java.util.UUID;
 public class ProductCatalogDTO extends RepresentationModel<ProductCatalogDTO> {
     private UUID id;
     private String name;
+    private String shortDescription;
     private Integer price;
     private String imageUrl;
     private Instant createdAt;

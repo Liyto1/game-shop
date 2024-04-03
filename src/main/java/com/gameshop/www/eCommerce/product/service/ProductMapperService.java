@@ -13,6 +13,7 @@ public class ProductMapperService {
         ProductCatalogDTO productCatalogDTO = new ProductCatalogDTO();
         productCatalogDTO.setId(product.getId());
         productCatalogDTO.setName(product.getName());
+        productCatalogDTO.setShortDescription(product.getShortDescription());
         productCatalogDTO.setPrice(product.getPrice());
         productCatalogDTO.setImageUrl(product.getImageUrl());
         productCatalogDTO.setCreatedAt(product.getCreatedAt());
@@ -35,7 +36,7 @@ public class ProductMapperService {
         productDetailDTO.setLongDescription(product.getLongDescription());
         productDetailDTO.setReviews(product.getReviews());
         productDetailDTO.setAverageRate(product.getAverageRate());
-        productDetailDTO.setCategory(productDetailDTO.getCategory());
+        productDetailDTO.setCategory(product.getCategory().getName());
 
         return productDetailDTO;
     }
