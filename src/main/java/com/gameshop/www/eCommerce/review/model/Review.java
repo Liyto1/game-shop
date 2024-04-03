@@ -2,6 +2,8 @@ package com.gameshop.www.eCommerce.review.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gameshop.www.eCommerce.product.model.Product;
+import com.gameshop.www.eCommerce.user.model.LocalUser;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,5 +44,10 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @ToString.Exclude
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @JoinColumn(name = "local_user_id", nullable = false)
+    private LocalUser localUser;
 
 }

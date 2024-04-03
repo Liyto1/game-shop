@@ -32,6 +32,9 @@ public class Product {
     @Column(name = "short_description")
     private String shortDescription;
 
+    @Column(name = "long_description")
+    private String longDescription;
+
     @Column(name = "price", nullable = false)
     private Integer price;
 
@@ -63,11 +66,20 @@ public class Product {
     @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @Column(name = "average_rate")
+    private Double averageRate;
+
+    public void updateAvgRate() {
+        this.averageRate = reviews.stream()
+                .mapToInt(Review::getRate)
+                .average()
+                .orElse(0.0);
+    }
 }

@@ -35,8 +35,12 @@ public interface ProductDAO extends JpaRepository<Product, UUID>, QuerydslPredic
 
         bindings.bind(root.price).all((path, value) -> {
                     List<? extends Integer> prices = new ArrayList<>(value);
-                    if (prices.size() == 2) {
+                    if (prices.size() == 2 && prices.get(0) < prices.get(1)) {
                         return Optional.of(path.between(prices.get(0), prices.get(1)));
+                    } else if (prices.size() == 2 && prices.get(0) > prices.get(1)) {
+                        return Optional.of(path.between(prices.get(1), prices.get(0)));
+                    } else if (prices.size() == 2 && prices.get(0) == prices.get(1)) {
+                        return Optional.of(path.eq(prices.get(0)));
                     }
                     return Optional.empty();
                 }
@@ -51,5 +55,4 @@ public interface ProductDAO extends JpaRepository<Product, UUID>, QuerydslPredic
 
     @Query(value = "SELECT * FROM Product ORDER BY RANDOM() LIMIT 200", nativeQuery = true)
     List<Product> findRandomProducts();
-
 }
