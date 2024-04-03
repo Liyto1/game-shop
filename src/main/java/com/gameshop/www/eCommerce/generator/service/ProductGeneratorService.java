@@ -7,7 +7,6 @@ import com.gameshop.www.eCommerce.product.model.Brand;
 import com.gameshop.www.eCommerce.product.model.Category;
 import com.gameshop.www.eCommerce.product.model.Inventory;
 import com.gameshop.www.eCommerce.product.model.Product;
-import com.gameshop.www.eCommerce.review.dao.ReviewDAO;
 import com.gameshop.www.eCommerce.review.model.Review;
 import com.gameshop.www.eCommerce.user.dao.LocalUserDAO;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
@@ -32,8 +31,7 @@ public class ProductGeneratorService {
     private final ProductDAO productDAO;
     private final BrandDAO brandDAO;
     private final CategoryDAO categoryDAO;
-    private final ReviewDAO reviewDAO;
-
+    private final LocalUserDAO localUserDAO;
     List<String> categories = List.of("Keyboards", "Mouses", "Headsets", "Mouse mats", "Joysticks and controllers", "Gaming chairs");
     List<String> brands = List.of("Logitech", "Razer", "Acer", "Asus", "Gigabyte", "MSI");
     Map<String, String> images = new HashMap<>(Map.of("Mouse", "http://surl.li/sbdfp", "Keyboard", "http://surl.li/sbdgb", "Headset",
@@ -41,22 +39,21 @@ public class ProductGeneratorService {
     List<Brand> brandsList = new ArrayList<>();
     List<Category> categoriesList = new ArrayList<>();
     List<Product> products = new ArrayList<>();
-    private final LocalUserDAO localUserDAO;
 
-    public ProductGeneratorService(ProductDAO productDAO, BrandDAO brandDAO, CategoryDAO categoryDAO, ReviewDAO reviewDAO,
+    public ProductGeneratorService(ProductDAO productDAO, BrandDAO brandDAO, CategoryDAO categoryDAO,
                                    LocalUserDAO localUserDAO) {
         this.productDAO = productDAO;
         this.brandDAO = brandDAO;
         this.categoryDAO = categoryDAO;
-        this.reviewDAO = reviewDAO;
         this.localUserDAO = localUserDAO;
     }
 
+    @Transactional
     public void generateProducts() {
         long time = System.currentTimeMillis();
 
         Faker faker = new Faker();
-        if (!(brandsList.size() > 1)) {
+        if (brandsList.size() <= 1) {
             addBrandAndCategory();
         }
         for (int i = 0; i < 1000; i++) {
@@ -73,7 +70,7 @@ public class ProductGeneratorService {
 
     }
 
-    @Transactional
+
     protected Product createProduct(Faker faker) {
         Product product = new Product();
         product.setName(faker.commerce().productName());
@@ -174,7 +171,7 @@ public class ProductGeneratorService {
             Review review = new Review();
             review.setComment(REVIEW_TEXT);
             review.setRate(faker.random().nextInt(3, 5));
-            review.setLocalUser(users.get(faker.random().nextInt(1, users.size())));
+            review.setLocalUser(users.get(faker.random().nextInt(1, users.size() - 1)));
             reviews.add(review);
             review.setProduct(product);
         }

@@ -1,7 +1,6 @@
 package com.gameshop.www.eCommerce.product.controller;
 
 
-import com.gameshop.www.eCommerce.product.dao.ProductDAO;
 import com.gameshop.www.eCommerce.product.dto.ProductCatalogDTO;
 import com.gameshop.www.eCommerce.product.dto.ProductDetailDTO;
 import com.gameshop.www.eCommerce.product.dto.ProductModelAssembler;
@@ -30,9 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping("/products")
@@ -43,19 +39,16 @@ public class ProductController {
     private final ProductModelAssembler productModelAssembler;
     private final PagedResourcesAssembler<ProductCatalogDTO> pagedResourcesAssembler;
     private final FilterService filterService;
-    private final ProductDAO productDAO;
 
     public ProductController(ProductService productService, ProductMapperService productMapperService,
                              ProductModelAssembler productModelAssembler,
                              PagedResourcesAssembler<ProductCatalogDTO> pagedResourcesAssembler,
-                             FilterService filterService,
-                             ProductDAO productDAO) {
+                             FilterService filterService) {
         this.productService = productService;
         this.productMapperService = productMapperService;
         this.productModelAssembler = productModelAssembler;
         this.pagedResourcesAssembler = pagedResourcesAssembler;
         this.filterService = filterService;
-        this.productDAO = productDAO;
     }
 
     @CrossOrigin
@@ -95,7 +88,7 @@ public class ProductController {
         List<ProductCatalogDTO> products = productService.getMostPurchasedProducts()
                 .stream()
                 .map(productMapperService::toModel)
-                .collect(Collectors.toList());
+                .toList();
 
         CollectionModel<ProductCatalogDTO> collectionModel = productModelAssembler.toCollectionModel(products);
         return ResponseEntity.ok(collectionModel);

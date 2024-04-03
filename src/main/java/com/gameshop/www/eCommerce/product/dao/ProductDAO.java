@@ -2,18 +2,15 @@ package com.gameshop.www.eCommerce.product.dao;
 
 import com.gameshop.www.eCommerce.product.model.Product;
 import com.gameshop.www.eCommerce.product.model.QProduct;
-import com.gameshop.www.eCommerce.review.model.Review;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.StringPath;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;

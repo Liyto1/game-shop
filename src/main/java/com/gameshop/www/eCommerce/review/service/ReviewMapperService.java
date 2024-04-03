@@ -11,8 +11,8 @@ public class ReviewMapperService {
         ReviewMainPageDTO reviewMainPageDTO = new ReviewMainPageDTO();
         reviewMainPageDTO.setId(review.getId());
         reviewMainPageDTO.setProductId(review.getProduct().getId());
-        reviewMainPageDTO.setRate(reviewMainPageDTO.getRate());
-        reviewMainPageDTO.setComment(reviewMainPageDTO.getComment());
+        reviewMainPageDTO.setRate(review.getRate());
+        reviewMainPageDTO.setComment(review.getComment());
         reviewMainPageDTO.setUserName(review.getLocalUser().getFirstName());
         reviewMainPageDTO.setUserPhoto(review.getLocalUser().getUserPhoto());
         return reviewMainPageDTO;
