@@ -32,7 +32,7 @@ public class ProductGeneratorService {
     private final BrandDAO brandDAO;
     private final CategoryDAO categoryDAO;
     private final LocalUserDAO localUserDAO;
-    List<String> categories = List.of("Keyboards", "Mouses", "Headsets", "Mouse mats", "Joysticks and controllers", "Gaming chairs");
+    List<String> categories = List.of("Keyboards", "Mice", "Headsets", "Mouse mats", "Joysticks and controllers", "Gaming chairs");
     List<String> brands = List.of("Logitech", "Razer", "Acer", "Asus", "Gigabyte", "MSI");
     Map<String, String> images = new HashMap<>(Map.of("Mouse", "http://surl.li/sbdfp", "Keyboard", "http://surl.li/sbdgb", "Headset",
             "http://surl.li/sbebq", "Joystick", "http://surl.li/sbebu", "def", "http://surl.li/jvxbt"));
@@ -97,7 +97,7 @@ public class ProductGeneratorService {
             case "Joysticks and controllers" -> {
                 return images.get("Joystick");
             }
-            case "Headset" -> {
+            case "Headsets" -> {
                 return images.get("Headset");
             }
             default -> {
