@@ -1,13 +1,12 @@
 package com.gameshop.www.eCommerce.product.model;
 
+import com.gameshop.www.eCommerce.review.model.Review;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -33,6 +32,9 @@ public class Product {
     @Column(name = "short_description")
     private String shortDescription;
 
+    @Column(name = "long_description")
+    private String longDescription;
+
     @Column(name = "price", nullable = false)
     private Integer price;
 
@@ -43,26 +45,41 @@ public class Product {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb", name = "characteristics")
-    private Map<String, Object> characteristics;
+    @ElementCollection
+    @MapKeyColumn(name = "key")
+    @Column(name = "value")
+    private Map<String, String> characteristics;
 
     @Column(name = "price_with_sale")
     private Integer priceWithSale;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE, optional = false, orphanRemoval = true)
+    @OneToOne(mappedBy = "product", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, optional = false, orphanRemoval = true)
     private Inventory inventory;
 
+    @Column(name = "is_sale")
+    private Boolean isSale;
+
+    @Column(name = "is_present")
+    private Boolean isPresent;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @Column(name = "average_rate")
+    private Double averageRate;
+
+    public void updateAvgRate() {
+        this.averageRate = reviews.stream()
+                .mapToInt(Review::getRate)
+                .average()
+                .orElse(0.0);
+    }
 }

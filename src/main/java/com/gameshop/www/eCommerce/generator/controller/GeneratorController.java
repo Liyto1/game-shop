@@ -1,8 +1,8 @@
-package com.gameshop.www.eCommerce.generator;
+package com.gameshop.www.eCommerce.generator.controller;
 
-import com.gameshop.www.eCommerce.order.service.OrderGeneratorService;
-import com.gameshop.www.eCommerce.product.service.GeneratorService;
-import com.gameshop.www.eCommerce.user.service.UserGeneratorService;
+import com.gameshop.www.eCommerce.generator.service.OrderGeneratorService;
+import com.gameshop.www.eCommerce.generator.service.ProductGeneratorService;
+import com.gameshop.www.eCommerce.generator.service.UserGeneratorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/generate")
 public class GeneratorController {
 
-    private final GeneratorService generatorService;
+    private final ProductGeneratorService productGeneratorService;
     private final OrderGeneratorService orderGeneratorService;
     private final UserGeneratorService userGeneratorService;
 
-    public GeneratorController(GeneratorService generatorService,
+    public GeneratorController(ProductGeneratorService productGeneratorService,
                                OrderGeneratorService orderGeneratorService,
                                UserGeneratorService userGeneratorService) {
-        this.generatorService = generatorService;
+        this.productGeneratorService = productGeneratorService;
         this.orderGeneratorService = orderGeneratorService;
         this.userGeneratorService = userGeneratorService;
     }
@@ -28,7 +28,7 @@ public class GeneratorController {
     @CrossOrigin
     @PostMapping("/products")
     public ResponseEntity<Void> generateProducts() {
-        generatorService.generateProducts();
+        productGeneratorService.generateProducts();
         return ResponseEntity.ok().build();
     }
 

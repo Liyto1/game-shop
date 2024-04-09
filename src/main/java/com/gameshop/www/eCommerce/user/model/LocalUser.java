@@ -60,4 +60,7 @@ public class LocalUser {
     @Column(name = "email_verified", nullable = false)
     private Boolean isEmailVerified = false;
 
+    @Column(name = "user_photo")
+    private String userPhoto;
+
 }
