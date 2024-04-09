@@ -3,11 +3,12 @@ phases:
   build:
     commands:
       - echo Packaging JAR file..
-      - mvn clean install
+      - mvn clean package
   post_build:
     commands:
       - echo Build complete
+      - mv target/*.jar app.jar
 artifacts:
   files:
-    - target/gamer-shop-rest-api.jar
+    - app.jar
   discard-path: yes
