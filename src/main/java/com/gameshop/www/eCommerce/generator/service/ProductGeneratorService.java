@@ -10,7 +10,6 @@ import com.gameshop.www.eCommerce.product.model.Product;
 import com.gameshop.www.eCommerce.review.model.Review;
 import com.gameshop.www.eCommerce.user.dao.LocalUserDAO;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
@@ -48,7 +47,6 @@ public class ProductGeneratorService {
         this.localUserDAO = localUserDAO;
     }
 
-    @Transactional
     public void generateProducts() {
         long time = System.currentTimeMillis();
 
