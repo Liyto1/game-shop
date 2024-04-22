@@ -2,8 +2,10 @@ package com.gameshop.www.eCommerce.auth.controller;
 
 import com.gameshop.www.eCommerce.auth.model.AuthResponse;
 import com.gameshop.www.eCommerce.auth.model.LoginBody;
+import com.gameshop.www.eCommerce.auth.model.PasswordResetBody;
 import com.gameshop.www.eCommerce.auth.model.RegistrationBody;
 import com.gameshop.www.eCommerce.exception.EmailFailureException;
+import com.gameshop.www.eCommerce.exception.EmailNotFoundException;
 import com.gameshop.www.eCommerce.exception.UserAlreadyExistException;
 import com.gameshop.www.eCommerce.exception.UserNotVerifiedException;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
@@ -80,7 +82,7 @@ public class AuthenticationController {
 
     @CrossOrigin
     @PostMapping("/verify")
-    public ResponseEntity verifyEmail(@RequestParam String token) {
+    public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
         if (userService.verifyUser(token)) {
             return ResponseEntity.ok().build();
         } else {
@@ -92,5 +94,24 @@ public class AuthenticationController {
     @GetMapping("/me")
     public LocalUser getLoggedUserProfile(@AuthenticationPrincipal LocalUser user) {
         return user;
+    }
+
+    @PostMapping("/forgot")
+    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
+        try {
+            userService.forgotPassword(email);
+            return ResponseEntity.ok().build();
+        } catch (EmailNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email not found");
+        } catch (EmailFailureException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid PasswordResetBody body) {
+
+        userService.resetPassword(body);
+        return ResponseEntity.ok().build();
     }
 }
