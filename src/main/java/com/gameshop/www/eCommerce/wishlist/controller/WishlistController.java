@@ -5,8 +5,7 @@ import com.gameshop.www.eCommerce.wishlist.model.WishList;
 import com.gameshop.www.eCommerce.wishlist.service.WishlistService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,48 +17,39 @@ public class WishlistController {
 
     private final WishlistService wishlistService;
 
-
     public WishlistController(WishlistService wishlistService) {
         this.wishlistService = wishlistService;
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Object> addProductToWishlist(@RequestParam("product") UUID productId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof LocalUser user) {
-            user = (LocalUser) authentication.getPrincipal();
-            UUID userId = user.getId();
-            wishlistService.addProductToWishlist(productId, userId);
+    @PostMapping("/add/{productId}")
+    public ResponseEntity<Object> addProductToWishlist(@PathVariable UUID productId,
+                                                       @AuthenticationPrincipal LocalUser user) {
+        if (user != null) {
+            wishlistService.addProductToWishlist(productId, user);
             return ResponseEntity.status(HttpStatus.CREATED).body("Product added to wishlist " + user.getEmail());
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
-    @DeleteMapping("/remove")
-    public ResponseEntity<Object> removeProductFromWishlist(@RequestParam("product") UUID productId,
-                                                            @RequestParam("token") String token) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof LocalUser user) {
-            user = (LocalUser) authentication.getPrincipal();
-            UUID userId = user.getId();
-            wishlistService.removeProductFromWishlist(productId, userId);
+    @DeleteMapping("/remove/{productId}")
+    public ResponseEntity<Object> removeProductFromWishlist(@PathVariable UUID productId,
+                                                            @AuthenticationPrincipal LocalUser user) {
+        if (user != null) {
+            wishlistService.removeProductFromWishlist(productId, user);
             return ResponseEntity.status(HttpStatus.OK).body("Product removed from wishlist " + user.getEmail());
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Object> getWishlist() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof LocalUser user) {
-            user = (LocalUser) authentication.getPrincipal();
-            UUID userId = user.getId();
-            List<WishList> wishList = wishlistService.getWishlist(userId);
+    public ResponseEntity<Object> getWishlist(@AuthenticationPrincipal LocalUser user) {
+        if (user != null) {
+            List<WishList> wishList = wishlistService.getUserWishlist(user);
             return ResponseEntity.status(HttpStatus.OK).body(wishList);
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 }

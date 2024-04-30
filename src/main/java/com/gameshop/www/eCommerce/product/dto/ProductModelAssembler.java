@@ -18,13 +18,13 @@ public class ProductModelAssembler extends RepresentationModelAssemblerSupport<P
 
     @Override
     public ProductCatalogDTO toModel(ProductCatalogDTO entity) {
-        return entity.add(linkTo(methodOn(ProductController.class).getProductById(entity.getId())).withSelfRel());
+        return entity.add(linkTo(methodOn(ProductController.class).getProductById(entity.getId(), null)).withSelfRel());
     }
 
-    public EntityModel<ProductDetailDTO> toDetailModel(ProductDetailDTO entity) {
-        return EntityModel.of(entity.add(linkTo(methodOn(ProductController.class).getProductById(entity.getId())).withSelfRel(),
+    public EntityModel<ProductDetailDTO> toModelDetail(ProductDetailDTO entity) {
+        return EntityModel.of(entity.add(linkTo(methodOn(ProductController.class).getProductById(entity.getId(), null)).withSelfRel(),
                 linkTo(methodOn(ProductController.class)
-                        .getProducts(null, null, null))
+                        .getProducts(null, null, null, null))
                         .withRel("products")));
     }
 
@@ -32,7 +32,7 @@ public class ProductModelAssembler extends RepresentationModelAssemblerSupport<P
     public CollectionModel<ProductCatalogDTO> toCollectionModel(Iterable<? extends ProductCatalogDTO> entities) {
         return super.toCollectionModel(entities)
                 .add(linkTo(methodOn(ProductController.class)
-                        .getProducts(null, null, null)).withSelfRel());
+                        .getProducts(null, null, null, null)).withSelfRel());
     }
 
 }

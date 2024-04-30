@@ -21,11 +21,6 @@ public class WishList {
     private UUID id;
 
     @NonNull
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
-    private Product product;
-
-    @NonNull
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -33,5 +28,10 @@ public class WishList {
     @ManyToOne(optional = false)
     @JoinColumn(name = "local_user_id", nullable = false)
     private LocalUser localUser;
+
+    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
 }

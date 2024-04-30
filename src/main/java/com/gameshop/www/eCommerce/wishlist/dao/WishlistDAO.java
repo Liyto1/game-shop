@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface WishlistDAO extends JpaRepository<WishList, UUID> {
 
 
-    List<WishList> findByLocalUser_Id(UUID id);
-
     void deleteByProductAndLocalUser(Product product, LocalUser localUser);
+
+    List<WishList> findByLocalUser(LocalUser localUser);
 }

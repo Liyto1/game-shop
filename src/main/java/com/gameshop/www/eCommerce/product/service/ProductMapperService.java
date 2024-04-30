@@ -5,11 +5,7 @@ import com.gameshop.www.eCommerce.product.dto.ProductDetailDTO;
 import com.gameshop.www.eCommerce.product.model.Product;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
 import com.gameshop.www.eCommerce.wishlist.service.WishlistService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class ProductMapperService {
@@ -20,8 +16,7 @@ public class ProductMapperService {
     }
 
 
-    public ProductCatalogDTO toModel(Product product) {
-
+    public ProductCatalogDTO toModel(Product product, LocalUser user) {
         ProductCatalogDTO productCatalogDTO = new ProductCatalogDTO();
         productCatalogDTO.setId(product.getId());
         productCatalogDTO.setName(product.getName());
@@ -31,18 +26,15 @@ public class ProductMapperService {
         productCatalogDTO.setCreatedAt(product.getCreatedAt());
         productCatalogDTO.setPriceWithSale(product.getPriceWithSale());
         productCatalogDTO.setBrand(product.getBrand().getName());
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof LocalUser user) {
-            user = (LocalUser) auth.getPrincipal();
-            UUID userId = user.getId();
-            productCatalogDTO.setInWishlist(wishlistService.isProductInWishlist(product.getId(), userId));
+        if (user != null) {
+            productCatalogDTO.setInWishlist(wishlistService.isProductInWishlist(product.getId(), user));
         } else {
             productCatalogDTO.setInWishlist(false);
         }
         return productCatalogDTO;
     }
 
-    public ProductDetailDTO toModelDetail(Product product) {
+    public ProductDetailDTO toModelDetail(Product product, LocalUser user) {
         ProductDetailDTO productDetailDTO = new ProductDetailDTO();
         productDetailDTO.setId(product.getId());
         productDetailDTO.setName(product.getName());
@@ -57,11 +49,8 @@ public class ProductMapperService {
         productDetailDTO.setReviews(product.getReviews());
         productDetailDTO.setAverageRate(product.getAverageRate());
         productDetailDTO.setCategory(product.getCategory().getName());
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof LocalUser user) {
-            user = (LocalUser) auth.getPrincipal();
-            UUID userId = user.getId();
-            productDetailDTO.setInWishlist(wishlistService.isProductInWishlist(product.getId(), userId));
+        if (user != null) {
+            productDetailDTO.setInWishlist(wishlistService.isProductInWishlist(product.getId(), user));
         } else {
             productDetailDTO.setInWishlist(false);
         }

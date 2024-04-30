@@ -9,6 +9,7 @@ import com.gameshop.www.eCommerce.product.filter.ProductFilterDTO;
 import com.gameshop.www.eCommerce.product.model.Product;
 import com.gameshop.www.eCommerce.product.service.ProductMapperService;
 import com.gameshop.www.eCommerce.product.service.ProductService;
+import com.gameshop.www.eCommerce.user.model.LocalUser;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,21 +57,22 @@ public class ProductController {
     @GetMapping()
     public ResponseEntity<PagedModel<ProductCatalogDTO>> getProducts(@QuerydslPredicate(root = Product.class) Predicate predicate,
                                                                      @RequestParam(required = false) Map<String, String> allRequestParams,
-                                                                     Pageable pageable) {
+                                                                     Pageable pageable, @AuthenticationPrincipal LocalUser user) {
 
         Page<ProductCatalogDTO> products = productService.getProducts(predicate, pageable, allRequestParams)
-                .map(productMapperService::toModel);
+                .map(product -> productMapperService.toModel(product, user));
         PagedModel<ProductCatalogDTO> pagedModel = pagedResourcesAssembler.toModel(products, productModelAssembler);
         return new ResponseEntity<>(pagedModel, HttpStatus.OK);
     }
 
     @CrossOrigin
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<ProductDetailDTO>> getProductById(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<ProductDetailDTO>> getProductById(@PathVariable UUID id,
+                                                                        @AuthenticationPrincipal LocalUser user) {
 
         return productService.getProductById(id)
-                .map(productMapperService::toModelDetail)
-                .map(productModelAssembler::toDetailModel)
+                .map(product -> productMapperService.toModelDetail(product, user))
+                .map(productModelAssembler::toModelDetail)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -84,10 +87,10 @@ public class ProductController {
 
     @CrossOrigin
     @GetMapping("/most-purchase")
-    public ResponseEntity<CollectionModel<ProductCatalogDTO>> getMostPurchasedProducts() {
+    public ResponseEntity<CollectionModel<ProductCatalogDTO>> getMostPurchasedProducts(@AuthenticationPrincipal LocalUser user) {
         List<ProductCatalogDTO> products = productService.getMostPurchasedProducts()
                 .stream()
-                .map(productMapperService::toModel)
+                .map(product -> productMapperService.toModel(product, user))
                 .toList();
 
         CollectionModel<ProductCatalogDTO> collectionModel = productModelAssembler.toCollectionModel(products);
