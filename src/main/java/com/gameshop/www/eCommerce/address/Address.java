@@ -49,7 +49,7 @@ public class Address {
     @Column(name = "address", nullable = false, length = 120)
     private String addressLine;
 
-    @Column(name = "postcode", nullable = false, length = 10)
+    @Column(name = "postcode", nullable = false)
     private Integer postcode;
 
     @JsonIgnore

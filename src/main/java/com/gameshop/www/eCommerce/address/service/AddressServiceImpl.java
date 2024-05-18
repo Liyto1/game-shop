@@ -6,10 +6,12 @@ import com.gameshop.www.eCommerce.address.mapper.AddressMapper;
 import com.gameshop.www.eCommerce.address.repository.AddressRepository;
 import com.gameshop.www.eCommerce.exception.AddressNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class AddressServiceImpl implements AddressService{
     @Autowired
     private AddressRepository addressRepository;
