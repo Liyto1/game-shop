@@ -32,4 +32,5 @@ public class ProductDetailDTO extends RepresentationModel<ProductDetailDTO> {
     private List<Review> reviews;
     private String category;
     private Double averageRate;
+    private Boolean inWishlist;
 }

@@ -24,4 +24,5 @@ public class ProductCatalogDTO extends RepresentationModel<ProductCatalogDTO> {
     private Instant createdAt;
     private Integer priceWithSale;
     private String brand;
+    private Boolean inWishlist;
 }

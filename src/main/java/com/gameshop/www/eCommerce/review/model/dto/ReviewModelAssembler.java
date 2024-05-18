@@ -16,7 +16,7 @@ public class ReviewModelAssembler extends RepresentationModelAssemblerSupport<Re
 
     @Override
     public ReviewMainPageDTO toModel(ReviewMainPageDTO entity) {
-        return entity.add(linkTo(methodOn(ProductController.class).getProductById(entity.getProductId())).withRel("product"));
+        return entity.add(linkTo(methodOn(ProductController.class).getProductById(entity.getProductId(), null)).withRel("product"));
     }
 
     @Override
