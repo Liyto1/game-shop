@@ -27,28 +27,28 @@ public class AddressController {
     }
 
     @Operation(summary = "Get an address by ID")
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<AddressDto> getAddress(@PathVariable UUID id) {
         AddressDto addressDto = addressService.getAddress(id);
         return ResponseEntity.ok(addressDto);
     }
 
     @Operation(summary = "Get all addresses")
-    @GetMapping
+    @GetMapping("/get/all")
     public ResponseEntity<List<AddressDto>> getAllAddresses() {
         List<AddressDto> addresses = addressService.getAllAddresses();
         return ResponseEntity.ok(addresses);
     }
 
     @Operation(summary = "Update an address by ID")
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<AddressDto> updateAddress(@PathVariable UUID id, @RequestBody AddressDto addressDto) {
         AddressDto updatedAddress = addressService.updateAddress(id, addressDto);
         return ResponseEntity.ok(updatedAddress);
     }
 
     @Operation(summary = "Delete an address by ID")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteAddress(@PathVariable UUID id) {
         addressService.deleteAddress(id);
         return ResponseEntity.noContent().build();
