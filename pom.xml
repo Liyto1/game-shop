@@ -98,7 +98,6 @@
             <groupId>com.querydsl</groupId>
             <artifactId>querydsl-jpa</artifactId>
             <version>5.0.0</version>
-            <scope>provided</scope>
             <classifier>jakarta</classifier>
         </dependency>
         <dependency>
