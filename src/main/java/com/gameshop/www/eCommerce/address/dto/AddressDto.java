@@ -1,6 +1,7 @@
 package com.gameshop.www.eCommerce.address.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +35,7 @@ public class AddressDto {
     @NotBlank
     @Size(max = 120)
     private String addressLine;
-    @NotBlank
+    @NotNull
     private Integer postcode;
 
 
