@@ -5,25 +5,27 @@ import com.gameshop.www.eCommerce.address.dto.AddressDto;
 import com.gameshop.www.eCommerce.address.mapper.AddressMapper;
 import com.gameshop.www.eCommerce.address.repository.AddressRepository;
 import com.gameshop.www.eCommerce.exception.AddressNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
-public class AddressServiceImpl implements AddressService{
-    @Autowired
-    private AddressRepository addressRepository;
-    @Autowired
-    private AddressMapper addressMapper;
+public class AddressServiceImpl implements AddressService {
+
+    private final AddressRepository addressRepository;
+    private final AddressMapper addressMapper;
+
+    public AddressServiceImpl(AddressRepository addressRepository, AddressMapper addressMapper) {
+        this.addressRepository = addressRepository;
+        this.addressMapper = addressMapper;
+    }
 
     @Override
     public AddressDto createNewAddress(AddressDto addressDto) {
-
-        Address address = addressMapper.addressDtoToAddress(addressDto);
-        Address savedAddress = addressRepository.save(address);
-        return addressMapper.addressToAddressDto(savedAddress);
+        Address address = addressRepository
+                .save(addressMapper.addressDtoToAddress(addressDto));
+        return addressMapper.addressToAddressDto(address);
     }
 
     @Override
