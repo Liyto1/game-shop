@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,6 +26,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "local_user")
 public class LocalUser {
     @Id
@@ -35,17 +37,17 @@ public class LocalUser {
     @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false, length = 100)
+    @Column(name = "last_name", length = 100)
     private String lastName;
 
     @JsonIgnore
-    @Column(name = "password", nullable = false, length = 1000)
+    @Column(name = "password", length = 1000)
     private String password;
 
     @Column(name = "email", nullable = false, unique = true, length = 320)
     private String email;
 
-    @Column(name = "phone_number", nullable = false, unique = true, length = 25)
+    @Column(name = "phone_number", length = 25)
     private String phoneNumber;
 
     @JsonIgnore
@@ -62,5 +64,11 @@ public class LocalUser {
 
     @Column(name = "user_photo")
     private String userPhoto;
+
+    @Column(name = "auth_type", nullable = false, length = 40)
+    private String authType;
+
+    @Column(name = "auth_provider", length = 55)
+    private String authProvider;
 
 }
