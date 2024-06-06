@@ -1,6 +1,6 @@
 package com.gameshop.www.eCommerce.order.model;
 
-import com.gameshop.www.eCommerce.user.model.Address;
+import com.gameshop.www.eCommerce.address.Address;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
