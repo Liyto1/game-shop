@@ -1,6 +1,7 @@
-package com.gameshop.www.eCommerce.user.model;
+package com.gameshop.www.eCommerce.address;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gameshop.www.eCommerce.user.model.LocalUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,14 +31,26 @@ public class Address {
     @Column(name = "id", nullable = false)
     private UUID id;
 
+    @Column(name = "first_name", nullable = false, length = 30)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false, length = 40)
+    private String lastName;
+
+    @Column(name = "contact_number", nullable = false, length = 10)
+    private String contactNumber;
+
+    @Column(name = "country", nullable = false, length = 60)
+    private String country;
+
     @Column(name = "city", nullable = false, length = 60)
     private String city;
 
-    @Column(name = "region", nullable = false, length = 60)
-    private String region;
+    @Column(name = "address", nullable = false, length = 120)
+    private String addressLine;
 
-    @Column(name = "post_office", nullable = false, length = 150)
-    private String postOffice;
+    @Column(name = "postcode", nullable = false)
+    private Integer postcode;
 
     @JsonIgnore
     @ManyToOne(optional = false)

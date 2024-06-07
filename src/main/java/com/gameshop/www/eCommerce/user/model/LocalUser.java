@@ -1,6 +1,7 @@
 package com.gameshop.www.eCommerce.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gameshop.www.eCommerce.address.Address;
 import com.gameshop.www.eCommerce.auth.model.VerificationToken;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
