@@ -14,6 +14,7 @@ import com.gameshop.www.eCommerce.security.JWTService;
 import com.gameshop.www.eCommerce.user.dao.LocalUserDAO;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class UserService {
 
     private final LocalUserDAO localUserDAO;

@@ -33,8 +33,11 @@ public class ProductGeneratorService {
     private final LocalUserDAO localUserDAO;
     List<String> categories = List.of("Keyboards", "Mice", "Headsets", "Mouse mats", "Joysticks and controllers", "Gaming chairs");
     List<String> brands = List.of("Logitech", "Razer", "Acer", "Asus", "Gigabyte", "MSI");
-    Map<String, String> images = new HashMap<>(Map.of("Mouse", "http://surl.li/sbdfp", "Keyboard", "http://surl.li/sbdgb", "Headset",
-            "http://surl.li/sbebq", "Joystick", "http://surl.li/sbebu", "def", "http://surl.li/jvxbt"));
+    Map<String, String> images = new HashMap<>(Map.of("Mouse", "https://drive.google.com/file/d/1Q1OU0dQbKCffDzb2vGyxFQWOsMCcc15M/view?usp=sharing",
+            "Keyboard", "https://drive.google.com/file/d/1h7nrxHyTnTjL8dim0FGDcm9ENG3QXoTP/view?usp=sharing", "Headset",
+            "https://drive.google.com/file/d/1lzLxjoooHkr81B08V6sEhT2J1FXuTNuU/view?usp=sharing", "Joystick",
+            "https://drive.google.com/file/d/1fN7XpCoyKQ8j0StQ4u1CralboUpgVuuB/view?usp=sharing",
+            "def", "https://drive.google.com/file/d/1Pn9fA7LdxzOMpZT5Xr4kARurAmBHrVRv/view?usp=sharing"));
     List<Brand> brandsList = new ArrayList<>();
     List<Category> categoriesList = new ArrayList<>();
     List<Product> products = new ArrayList<>();
