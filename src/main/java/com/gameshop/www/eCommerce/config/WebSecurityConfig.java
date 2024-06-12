@@ -28,10 +28,10 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> {
-                    authorize.requestMatchers("/auth/**", "/login/**", "/swagger-ui.html", "/products/**",
-                            "/reviews/best-rate", "/swagger-ui/**", "/v3/api-docs/**", "/"
-                            , "/oauth2/callback", "/error", "/google/about", "/logout", "/generate/**").permitAll();
-                    authorize.anyRequest().authenticated();
+//                    authorize.requestMatchers("/auth/**", "/login/**", "/swagger-ui.html", "/products/**",
+//                            "/reviews/best-rate", "/swagger-ui/**", "/v3/api-docs/**", "/"
+//                            , "/oauth2/callback", "/error", "/google/about", "/logout", "/generate/**").permitAll();
+                    authorize.anyRequest().permitAll();
                 })
                 .oauth2Login(auth ->
                         auth.successHandler(oAuth2SuccessHandler))

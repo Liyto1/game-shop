@@ -48,6 +48,8 @@ public class UserService {
         user.setFirstName(registrationBody.getFirstName());
         user.setLastName(registrationBody.getLastName());
         user.setEmail(registrationBody.getEmail());
+        user.setAuthProvider("Registration Form");
+        user.setAuthType("Site");
         user.setPhoneNumber(registrationBody.getPhoneNumber());
         user.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
         VerificationToken verificationToken = generateVerificationToken(user);
