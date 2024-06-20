@@ -31,6 +31,8 @@ public class ProductMapperService {
         } else {
             productCatalogDTO.setInWishlist(false);
         }
+        productCatalogDTO.setRating(product.getAverageRate());
+        productCatalogDTO.setReviewCount(product.getReviews().size());
         return productCatalogDTO;
     }
 
