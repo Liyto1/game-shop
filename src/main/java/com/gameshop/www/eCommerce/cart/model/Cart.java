@@ -1,5 +1,6 @@
 package com.gameshop.www.eCommerce.cart.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,11 +24,11 @@ public class Cart {
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id")
+    @OneToOne(orphanRemoval = true)
     private LocalUser user;
 
-    @OneToMany(mappedBy = "cart", orphanRemoval = true)
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CartItem> cartItems = new LinkedHashSet<>();
 
 }

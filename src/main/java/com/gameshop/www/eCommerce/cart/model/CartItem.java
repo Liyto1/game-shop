@@ -1,5 +1,6 @@
 package com.gameshop.www.eCommerce.cart.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.gameshop.www.eCommerce.product.model.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,14 +23,15 @@ public class CartItem {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn
     private Product product;
 
     @Column(name = "quantity")
     private Integer quantity;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cart_id")
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn
     private Cart cart;
 
 }
