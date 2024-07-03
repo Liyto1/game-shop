@@ -38,7 +38,7 @@ public class Product {
     @Column(name = "price", nullable = false)
     private Integer price;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 800)
     private String imageUrl;
 
     @CreationTimestamp

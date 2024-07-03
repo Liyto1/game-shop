@@ -2,6 +2,7 @@ package com.gameshop.www.eCommerce.user.service;
 
 import com.gameshop.www.eCommerce.auth.model.VerificationToken;
 import com.gameshop.www.eCommerce.exception.EmailFailureException;
+import com.gameshop.www.eCommerce.user.model.LocalUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -17,7 +18,7 @@ public class EmailService {
     @Value("${app.frontend.url}")
     private String url;
 
-    private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
 
     public EmailService(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
@@ -35,6 +36,19 @@ public class EmailService {
         message.setSubject("Verify your e-mail to activate your account.");
         message.setText("Please follow the link below to verify your e-mail to activate your account.\n " +
                 url + "/auth/verify?token=" + token.getToken());
+        try {
+            javaMailSender.send(message);
+        } catch (MailException ex) {
+            throw new EmailFailureException();
+        }
+    }
+
+    public void sendPasswordResetEmail(LocalUser user, String token) throws EmailFailureException {
+        SimpleMailMessage message = prepareMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Password reset request.");
+        message.setText("Please follow the link below to reset your password.\n " +
+                url + "/auth/reset?token=" + token);
         try {
             javaMailSender.send(message);
         } catch (MailException ex) {

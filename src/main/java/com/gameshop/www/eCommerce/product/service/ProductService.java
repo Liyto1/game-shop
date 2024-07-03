@@ -33,7 +33,7 @@ public class ProductService {
         return productDAO.findAll(builder, pageable);
     }
 
-    public <T> Optional<Product> getProductById(UUID id) {
+    public Optional<Product> getProductById(UUID id) {
         return productDAO.findByIdCustom(id);
     }
 

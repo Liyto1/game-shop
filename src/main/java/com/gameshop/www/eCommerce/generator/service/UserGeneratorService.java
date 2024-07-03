@@ -33,9 +33,8 @@ public class UserGeneratorService {
         user.setFirstName(faker.name().firstName());
         user.setLastName(faker.name().lastName());
         user.setEmail(faker.internet().emailAddress());
-        user.setPassword(faker.internet().password());
-        user.setPhoneNumber(faker.phoneNumber().cellPhone());
         user.setIsEmailVerified(true);
+        user.setAuthType("local");
         user.setUserPhoto(photos[faker.random().nextInt(0, 1)]);
         return user;
     }

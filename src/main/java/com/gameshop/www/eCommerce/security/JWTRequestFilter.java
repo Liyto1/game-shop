@@ -21,8 +21,8 @@ import java.util.UUID;
 @Component
 public class JWTRequestFilter extends OncePerRequestFilter {
 
-    private JWTService jwtService;
-    private LocalUserDAO localUserDAO;
+    private final JWTService jwtService;
+    private final LocalUserDAO localUserDAO;
 
     public JWTRequestFilter(JWTService jwtService, LocalUserDAO localUserDAO) {
         this.jwtService = jwtService;

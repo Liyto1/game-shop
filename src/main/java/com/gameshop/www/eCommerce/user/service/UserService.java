@@ -2,9 +2,11 @@ package com.gameshop.www.eCommerce.user.service;
 
 import com.gameshop.www.eCommerce.auth.dao.VerificationTokenDAO;
 import com.gameshop.www.eCommerce.auth.model.LoginBody;
+import com.gameshop.www.eCommerce.auth.model.PasswordResetBody;
 import com.gameshop.www.eCommerce.auth.model.RegistrationBody;
 import com.gameshop.www.eCommerce.auth.model.VerificationToken;
 import com.gameshop.www.eCommerce.exception.EmailFailureException;
+import com.gameshop.www.eCommerce.exception.EmailNotFoundException;
 import com.gameshop.www.eCommerce.exception.UserAlreadyExistException;
 import com.gameshop.www.eCommerce.exception.UserNotVerifiedException;
 import com.gameshop.www.eCommerce.security.EncryptionService;
@@ -12,6 +14,7 @@ import com.gameshop.www.eCommerce.security.JWTService;
 import com.gameshop.www.eCommerce.user.dao.LocalUserDAO;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class UserService {
 
     private final LocalUserDAO localUserDAO;
@@ -44,6 +48,8 @@ public class UserService {
         user.setFirstName(registrationBody.getFirstName());
         user.setLastName(registrationBody.getLastName());
         user.setEmail(registrationBody.getEmail());
+        user.setAuthProvider("Registration Form");
+        user.setAuthType("Site");
         user.setPhoneNumber(registrationBody.getPhoneNumber());
         user.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
         VerificationToken verificationToken = generateVerificationToken(user);
@@ -65,7 +71,7 @@ public class UserService {
         if (opUser.isPresent()) {
             LocalUser user = opUser.get();
             if (encryptionService.checkPassword(loginBody.getPassword(), user.getPassword())) {
-                if (user.getIsEmailVerified()) {
+                if (Boolean.TRUE.equals(user.getIsEmailVerified())) {
                     return jwtService.generateJWT(user);
                 } else {
                     List<VerificationToken> verificationTokens = user.getVerificationTokens();
@@ -89,7 +95,7 @@ public class UserService {
         if (opToken.isPresent()) {
             VerificationToken verificationToken = opToken.get();
             LocalUser user = verificationToken.getUser();
-            if (!user.getIsEmailVerified()) {
+            if (Boolean.FALSE.equals(user.getIsEmailVerified())) {
                 user.setIsEmailVerified(true);
                 localUserDAO.save(user);
                 verificationTokenDAO.deleteByUser(user);
@@ -98,4 +104,25 @@ public class UserService {
         }
         return false;
     }
+
+    public void forgotPassword(String email) throws EmailNotFoundException, EmailFailureException {
+        Optional<LocalUser> opUser = localUserDAO.findByEmailIgnoreCase(email);
+        if (opUser.isPresent()) {
+            LocalUser user = opUser.get();
+            String token = jwtService.generatePasswordResetJWT(user);
+            emailService.sendPasswordResetEmail(user, token);
+        } else {
+            throw new EmailNotFoundException();
+        }
+    }
+
+    public void resetPassword(PasswordResetBody body) {
+        Optional<LocalUser> opUser = localUserDAO.findByEmailIgnoreCase(jwtService.getResetPasswordEmail(body.getToken()));
+        if (opUser.isPresent()) {
+            LocalUser user = opUser.get();
+            user.setPassword(encryptionService.encryptPassword(body.getPassword()));
+            localUserDAO.save(user);
+        }
+    }
+
 }

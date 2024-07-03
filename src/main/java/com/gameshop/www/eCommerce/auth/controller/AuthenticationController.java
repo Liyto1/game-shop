@@ -2,8 +2,10 @@ package com.gameshop.www.eCommerce.auth.controller;
 
 import com.gameshop.www.eCommerce.auth.model.AuthResponse;
 import com.gameshop.www.eCommerce.auth.model.LoginBody;
+import com.gameshop.www.eCommerce.auth.model.PasswordResetBody;
 import com.gameshop.www.eCommerce.auth.model.RegistrationBody;
 import com.gameshop.www.eCommerce.exception.EmailFailureException;
+import com.gameshop.www.eCommerce.exception.EmailNotFoundException;
 import com.gameshop.www.eCommerce.exception.UserAlreadyExistException;
 import com.gameshop.www.eCommerce.exception.UserNotVerifiedException;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
@@ -13,19 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
 @RequestMapping("/auth")
 public class AuthenticationController {
-    private UserService userService;
+    private final UserService userService;
 
     public AuthenticationController(UserService userService) {
         this.userService = userService;
@@ -33,16 +29,22 @@ public class AuthenticationController {
 
     @CrossOrigin
     @PostMapping("/register")
-    public ResponseEntity register(@Valid @RequestBody RegistrationBody registrationBody) {
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegistrationBody registrationBody) {
+        AuthResponse authResponse = new AuthResponse();
         try {
             userService.registerUser(registrationBody);
             log.info("User registered successfully");
-            return ResponseEntity.ok().build();
+            authResponse.setSuccess(true);
+            return ResponseEntity.ok(authResponse);
         } catch (UserAlreadyExistException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exist");
-        } catch (EmailFailureException e) {
+        authResponse.setSuccess(false);
+        authResponse.setFailureReason("USER_ALREADY_EXISTS");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(authResponse);
+    } catch (EmailFailureException e) {
             log.info(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            authResponse.setSuccess(false);
+            authResponse.setFailureReason("EMAIL_SEND_FAILURE");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(authResponse);
         }
     }
 
@@ -80,7 +82,7 @@ public class AuthenticationController {
 
     @CrossOrigin
     @PostMapping("/verify")
-    public ResponseEntity verifyEmail(@RequestParam String token) {
+    public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
         if (userService.verifyUser(token)) {
             return ResponseEntity.ok().build();
         } else {
@@ -93,4 +95,25 @@ public class AuthenticationController {
     public LocalUser getLoggedUserProfile(@AuthenticationPrincipal LocalUser user) {
         return user;
     }
+
+    @PostMapping("/forgot")
+    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
+        try {
+            userService.forgotPassword(email);
+            return ResponseEntity.ok().build();
+        } catch (EmailNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email not found");
+        } catch (EmailFailureException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/reset")
+    public ResponseEntity<Void> resetPassword(@RequestBody @Valid PasswordResetBody body) {
+
+        userService.resetPassword(body);
+        return ResponseEntity.ok().build();
+    }
+
+
 }
