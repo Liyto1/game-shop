@@ -7,7 +7,7 @@ import java.util.UUID;
 @Data
 public class CartBody {
 
-    private UUID id;
-    private Integer quantity;
+    private UUID productId;
+    private Integer productQuantity;
 
 }

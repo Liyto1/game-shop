@@ -32,14 +32,13 @@ public class CartService {
             return cartDAO.save(cart);
         });
     }
-
+//refactor to 1 request to db
     @Transactional
     public CartDto addProductToCart(LocalUser user, List<CartBody> cartBodies) {
-        LocalUser persistedUser = localUserDAO.findById(user.getId()).orElseThrow(() -> new RuntimeException("User not found"));
-        Cart cart = getCartByUser(persistedUser);
+        Cart cart = getCartByUser(user);
 
         for (CartBody cartBody : cartBodies) {
-            Product product = productDAO.findById(cartBody.getId()).orElseThrow(() -> new RuntimeException("Product not found"));
+            Product product = productDAO.findById(cartBody.getProductId()).orElseThrow(() -> new RuntimeException("Product not found"));
 
             Optional<CartItem> existingCartItem = cart.getCartItems().stream()
                     .filter(cartItem -> cartItem.getProduct().equals(product))
@@ -47,11 +46,11 @@ public class CartService {
 
             if (existingCartItem.isPresent()) {
                 CartItem cartItem = existingCartItem.get();
-                cartItem.setQuantity(cartItem.getQuantity() + cartBody.getQuantity());
+                cartItem.setQuantity(cartItem.getQuantity() + cartBody.getProductQuantity());
             } else {
                 CartItem cartItem = new CartItem();
                 cartItem.setProduct(product);
-                cartItem.setQuantity(cartBody.getQuantity());
+                cartItem.setQuantity(cartBody.getProductQuantity());
                 cartItem.setCart(cart);
                 cart.getCartItems().add(cartItem);
             }
@@ -60,16 +59,16 @@ public class CartService {
     }
 
     @Transactional
-    public Cart removeProductFromCart(LocalUser user, List<CartBody> cartBodies) {
+    public CartDto removeProductFromCart(LocalUser user, List<CartBody> cartBodies) {
         Cart cart = getCartByUser(user);
 
         Map<UUID, CartItem> cartItemMap = cart.getCartItems().stream()
                 .collect(Collectors.toMap(cartItem -> cartItem.getProduct().getId(), cartItem -> cartItem));
 
         cartBodies.forEach(cartBody -> {
-            CartItem cartItem = cartItemMap.get(cartBody.getId());
+            CartItem cartItem = cartItemMap.get(cartBody.getProductId());
             if (cartItem != null) {
-                int newQuantity = cartItem.getQuantity() - cartBody.getQuantity();
+                int newQuantity = cartItem.getQuantity() - cartBody.getProductQuantity();
                 if (newQuantity > 0) {
                     cartItem.setQuantity(newQuantity);
                 } else {
@@ -78,7 +77,7 @@ public class CartService {
             }
         });
 
-        return cartDAO.save(cart);
+        return convertToCartDto(cartDAO.save(cart));
     }
 
     @Transactional

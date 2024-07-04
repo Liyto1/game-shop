@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/cart")
+@CrossOrigin
 public class CartController {
 
     private final CartService cartService;
@@ -40,8 +41,8 @@ public class CartController {
     }
 
     @PostMapping("/remove")
-    public ResponseEntity<Cart> removeFromCart(@AuthenticationPrincipal LocalUser user, @RequestBody List<CartBody> cartBodies) {
-        Cart cart = cartService.removeProductFromCart(user, cartBodies);
+    public ResponseEntity<CartDto> removeFromCart(@AuthenticationPrincipal LocalUser user, @RequestBody List<CartBody> cartBodies) {
+        CartDto cart = cartService.removeProductFromCart(user, cartBodies);
         return ResponseEntity.ok(cart);
     }
 }
