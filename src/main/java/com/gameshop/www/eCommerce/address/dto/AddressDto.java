@@ -34,6 +34,4 @@ public class AddressDto {
     private String addressLine;
     @NotNull
     private Integer postcode;
-
-
 }

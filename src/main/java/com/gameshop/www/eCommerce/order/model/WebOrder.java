@@ -7,7 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.TimeZoneStorage;
+import org.hibernate.annotations.TimeZoneStorageType;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,5 +38,19 @@ public class WebOrder {
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;
+
+    @Column(name = "total_price")
+    private Double totalPrice;
+
+    @Column(name = "status")
+    private String status;
+
+    //column for order number
+    @Column(name = "order_number")
+    private String orderNumber;
+
+    @Column(name = "order_time")
+    @TimeZoneStorage(TimeZoneStorageType.AUTO)
+    private ZonedDateTime orderTime;
 
 }
