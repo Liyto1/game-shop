@@ -57,5 +57,9 @@ public class ProductService {
 
         return productDAO.findAllByIdInOrder(ids);
     }
+
+    public List<Product> getProductsByIds(List<UUID> ids) {
+        return productDAO.findAllByIdInOrder(ids);
+    }
 }
 //todo: recommended
