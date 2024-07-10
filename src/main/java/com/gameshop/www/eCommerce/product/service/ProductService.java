@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
     private final ProductDAO productDAO;
-    private final String PREFIX = "characteristics.";
+    private static final String PREFIX = "characteristics.";
     private final WebOrderQuantityDAO webOrderQuantityDAO;
 
     public ProductService(ProductDAO productDAO, WebOrderQuantityDAO webOrderQuantityDAO) {
@@ -57,5 +57,9 @@ public class ProductService {
 
         return productDAO.findAllByIdInOrder(ids);
     }
+
+    public List<Product> getProductsByIds(List<UUID> ids) {
+        return productDAO.findAllByIdInOrder(ids);
+    }
+
 }
-//todo: recommended

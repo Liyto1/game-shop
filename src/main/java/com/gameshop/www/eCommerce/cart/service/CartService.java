@@ -6,18 +6,23 @@ import com.gameshop.www.eCommerce.cart.model.CartBody;
 import com.gameshop.www.eCommerce.cart.model.CartItem;
 import com.gameshop.www.eCommerce.cart.model.dto.CartDto;
 import com.gameshop.www.eCommerce.cart.model.dto.CartItemDto;
+import com.gameshop.www.eCommerce.exception.ProductNotFoundException;
 import com.gameshop.www.eCommerce.product.dao.ProductDAO;
 import com.gameshop.www.eCommerce.product.dto.ProductCatalogDTO;
 import com.gameshop.www.eCommerce.product.model.Product;
 import com.gameshop.www.eCommerce.user.dao.LocalUserDAO;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
-@AllArgsConstructor
+
+@RequiredArgsConstructor
 @Service
 public class CartService {
     private final CartDAO cartDAO;
@@ -26,7 +31,7 @@ public class CartService {
 
 
     public Cart getCartByUser(LocalUser user) {
-        return cartDAO.findByUser(user).orElseGet(() -> {
+        return cartDAO.findByUser_Id(user.getId()).orElseGet(() -> {
             Cart cart = new Cart();
             cart.setUser(user);
             return cartDAO.save(cart);
@@ -35,11 +40,20 @@ public class CartService {
 
     @Transactional
     public CartDto addProductToCart(LocalUser user, List<CartBody> cartBodies) {
-        LocalUser persistedUser = localUserDAO.findById(user.getId()).orElseThrow(() -> new RuntimeException("User not found"));
-        Cart cart = getCartByUser(persistedUser);
+        Cart cart = getCartByUser(user);
+
+        List<Product> products = productDAO.findAllById(cartBodies.stream()
+                .map(CartBody::getId)
+                .collect(Collectors.toList()));
+
+        Map<UUID, Product> productMap = products.stream()
+                .collect(Collectors.toMap(Product::getId, product -> product));
 
         for (CartBody cartBody : cartBodies) {
-            Product product = productDAO.findById(cartBody.getId()).orElseThrow(() -> new RuntimeException("Product not found"));
+            Product product = productMap.get(cartBody.getId());
+            if (product == null) {
+                throw new ProductNotFoundException("Product not found with id: " + cartBody.getId());
+            }
 
             Optional<CartItem> existingCartItem = cart.getCartItems().stream()
                     .filter(cartItem -> cartItem.getProduct().equals(product))
@@ -93,28 +107,18 @@ public class CartService {
     }
 
     private CartDto convertToCartDto(Cart cart) {
-        CartDto cartDto = new CartDto();
-        cartDto.setId(cart.getId());
-        Set<CartItemDto> cartItemsDTO = cart.getCartItems().stream()
-                .map(cartItem -> {
-                    CartItemDto cartItemDto = new CartItemDto();
-                    cartItemDto.setId(cartItem.getId());
+        return new CartDto(cart.getCartItems().stream()
+                .map(this::createCartItemDto)
+                .collect(Collectors.toSet()), cart.getId());
+    }
 
-                    ProductCatalogDTO productDto = new ProductCatalogDTO();
-                    productDto.setId(cartItem.getProduct().getId());
-                    productDto.setName(cartItem.getProduct().getName());
-                    productDto.setPrice(cartItem.getProduct().getPrice());
-                    productDto.setImageUrl(cartItem.getProduct().getImageUrl());
-                    productDto.setPriceWithSale(cartItem.getProduct().getPriceWithSale());
-                    //setColor
-                    cartItemDto.setProduct(productDto);
-                    cartItemDto.setQuantity(cartItem.getQuantity());
-
-                    return cartItemDto;
-                })
-                .collect(Collectors.toSet());
-        cartDto.setCartItems(cartItemsDTO);
-
-        return cartDto;
+    private CartItemDto createCartItemDto(CartItem cartItem) {
+        ProductCatalogDTO productDto = new ProductCatalogDTO();
+        productDto.setId(cartItem.getProduct().getId());
+        productDto.setName(cartItem.getProduct().getName());
+        productDto.setPrice(cartItem.getProduct().getPrice());
+        productDto.setImageUrl(cartItem.getProduct().getImageUrl());
+        productDto.setPriceWithSale(cartItem.getProduct().getPriceWithSale());
+        return new CartItemDto(cartItem.getId(), productDto, cartItem.getQuantity());
     }
 }

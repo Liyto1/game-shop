@@ -5,22 +5,22 @@ import com.gameshop.www.eCommerce.cart.model.CartBody;
 import com.gameshop.www.eCommerce.cart.model.dto.CartDto;
 import com.gameshop.www.eCommerce.cart.service.CartService;
 import com.gameshop.www.eCommerce.user.model.LocalUser;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/cart")
+@RequestMapping("/carts")
 public class CartController {
 
     private final CartService cartService;
 
 
-    @PostMapping("/add")
+    @PostMapping()
     public ResponseEntity<CartDto> addToCart(@AuthenticationPrincipal LocalUser user, @RequestBody List<CartBody> cartBodyList) {
         CartDto cart = cartService.addProductToCart(user, cartBodyList);
         return ResponseEntity.ok(cart);
@@ -33,13 +33,13 @@ public class CartController {
         return ResponseEntity.ok(cart);
     }
 
-    @GetMapping("/details")
+    @GetMapping()
     public ResponseEntity<CartDto> getCartDetails(@AuthenticationPrincipal LocalUser user) {
         CartDto cart = cartService.getCartDetails(user);
         return ResponseEntity.ok(cart);
     }
 
-    @PostMapping("/remove")
+    @DeleteMapping()
     public ResponseEntity<Cart> removeFromCart(@AuthenticationPrincipal LocalUser user, @RequestBody List<CartBody> cartBodies) {
         Cart cart = cartService.removeProductFromCart(user, cartBodies);
         return ResponseEntity.ok(cart);

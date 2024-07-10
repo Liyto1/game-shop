@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface CartDAO extends JpaRepository<Cart, UUID> {
     Optional<Cart> findByUser(LocalUser user);
 
+    Optional<Cart> findByUser_Id(UUID id);
 }
