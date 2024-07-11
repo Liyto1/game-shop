@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.gameshop.www</groupId>
-    <artifactId>eCommerce</artifactId>
+    <artifactId>ecommerce</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>eCommerce</name>
     <description>Gaming attributes shop</description>
