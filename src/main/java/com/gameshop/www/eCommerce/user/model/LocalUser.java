@@ -3,20 +3,9 @@ package com.gameshop.www.eCommerce.user.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gameshop.www.eCommerce.address.Address;
 import com.gameshop.www.eCommerce.auth.model.VerificationToken;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.gameshop.www.eCommerce.cart.model.Cart;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,16 +49,23 @@ public class LocalUser {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VerificationToken> verificationTokens = new ArrayList<>();
 
+    @JsonIgnore
     @Column(name = "email_verified", nullable = false)
     private Boolean isEmailVerified = false;
 
     @Column(name = "user_photo")
     private String userPhoto;
 
+    @JsonIgnore
     @Column(name = "auth_type", nullable = false, length = 40)
     private String authType;
 
+    @JsonIgnore
     @Column(name = "auth_provider", length = 55)
     private String authProvider;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", orphanRemoval = true)
+    private Cart cart;
 
 }
