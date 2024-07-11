@@ -3,28 +3,28 @@ package com.gameshop.www.eCommerce.order.service;
 import com.gameshop.www.eCommerce.config.WayForPayConfig;
 import com.gameshop.www.eCommerce.order.model.WebOrder;
 import lombok.AllArgsConstructor;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
 public class PayService {
 
     private final WayForPayConfig wayForPayConfig;
-    private final RestTemplate restTemplate;
 
     public String initiatePayment(WebOrder order) {
         String url = "https://secure.wayforpay.com/pay";
         String orderReference = order.getOrderNumber();
-        long orderDate = System.currentTimeMillis() / 1000L;
+        long orderDate = order.getOrderTime().toInstant().toEpochMilli();
         double amount = order.getTotalPrice();
         String currency = "USD";
 
@@ -43,43 +43,37 @@ public class PayService {
         String signature = generateSignature(wayForPayConfig.getMerchantLogin(),
                 wayForPayConfig.getMerchantDomainName(), orderReference, orderDate, amount, currency, productNames, productPrices, productCounts);
 
-        // Формування параметрів запиту
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("merchantAccount", wayForPayConfig.getMerchantLogin());
-        params.add("merchantDomainName", wayForPayConfig.getMerchantDomainName());
-        params.add("merchantTransactionSecureType", "AUTO");
-        params.add("orderReference", orderReference);
-        params.add("orderDate", String.valueOf(orderDate));
-        params.add("amount", String.valueOf(amount));
-        params.add("currency", currency);
+        Map<String, String> params = new HashMap<>();
+        params.put("merchantAccount", wayForPayConfig.getMerchantLogin());
+        params.put("merchantDomainName", wayForPayConfig.getMerchantDomainName());
+        params.put("merchantTransactionSecureType", "AUTO");
+        params.put("orderReference", orderReference);
+        params.put("orderDate", String.valueOf(orderDate));
+        params.put("amount", String.valueOf(amount));
+        params.put("currency", currency);
+        params.put("clientFirstName", order.getUser().getFirstName());
+        params.put("clientLastName", order.getUser().getLastName());
+        params.put("clientEmail", order.getUser().getEmail());
+        params.put("clientPhone", order.getUser().getPhoneNumber());
+        params.put("returnUrl", wayForPayConfig.getReturnUrl());
+        params.put("serviceUrl", wayForPayConfig.getServiceUrl());
+        params.put("merchantSignature", signature);
 
-        // Додавання масивів продуктів у запит
         for (String productName : productNames) {
-            params.add("productName[]", productName);
+            params.put("productName[]", productName);
         }
         for (Integer productPrice : productPrices) {
-            params.add("productPrice[]", String.valueOf(productPrice));
+            params.put("productPrice[]", String.valueOf(productPrice));
         }
         for (Integer productCount : productCounts) {
-            params.add("productCount[]", String.valueOf(productCount));
+            params.put("productCount[]", String.valueOf(productCount));
         }
 
-        params.add("clientFirstName", order.getUser().getFirstName());
-        params.add("clientLastName", order.getUser().getLastName());
-        params.add("clientEmail", order.getUser().getEmail());
-        params.add("clientPhone", order.getUser().getPhoneNumber());
-        params.add("returnUrl", wayForPayConfig.getReturnUrl());
-        params.add("serviceUrl", wayForPayConfig.getServiceUrl());
-        params.add("merchantSignature", signature);
+        String requestParams = params.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8))
+                .collect(Collectors.joining("&"));
 
-        // Відправка POST-запиту
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-
-        return response.getBody();
+        return url + "?" + requestParams;
     }
 
     private String generateSignature(String merchantAccount, String merchantDomainName, String orderReference, long orderDate, double amount, String currency, String[] productNames, Integer[] productPrices, Integer[] productCounts) {

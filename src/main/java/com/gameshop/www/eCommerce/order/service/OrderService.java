@@ -13,6 +13,8 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,6 +40,7 @@ public class OrderService {
 
         WebOrder order = new WebOrder();
         order.setUser(user);
+        order.setOrderTime(ZonedDateTime.now(ZoneId.systemDefault()));
         order.setQuantities(cart.getCartItems().stream().map(cartItem -> {
             WebOrderQuantity quantity = new WebOrderQuantity();
             quantity.setProduct(cartItem.getProduct());
