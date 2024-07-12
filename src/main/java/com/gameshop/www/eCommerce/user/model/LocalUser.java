@@ -12,18 +12,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -38,11 +33,11 @@ public class LocalUser {
     @Column(name = "first_name", nullable = false, length = 100)
     private String firstName;
 
-    @Column(name = "last_name", length = 100)
+    @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
 
     @JsonIgnore
-    @Column(name = "password", length = 1000)
+    @Column(name = "password", nullable = false, length = 1000)
     private String password;
 
     @Column(name = "email", nullable = false, unique = true, length = 320)
