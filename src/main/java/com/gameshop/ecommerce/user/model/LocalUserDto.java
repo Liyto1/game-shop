@@ -1,4 +1,4 @@
-package com.gameshop.www.eCommerce.user.model;
+package com.gameshop.ecommerce.user.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

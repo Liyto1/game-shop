@@ -1,9 +1,9 @@
-package com.gameshop.www.eCommerce.user.service;
+package com.gameshop.ecommerce.user.service;
 
-import com.gameshop.www.eCommerce.user.dao.LocalUserDAO;
-import com.gameshop.www.eCommerce.user.mapper.LocalUserMapper;
-import com.gameshop.www.eCommerce.user.model.LocalUser;
-import com.gameshop.www.eCommerce.user.model.LocalUserDto;
+import com.gameshop.ecommerce.user.dao.LocalUserDAO;
+import com.gameshop.ecommerce.user.model.LocalUser;
+import com.gameshop.ecommerce.user.mapper.LocalUserMapper;
+import com.gameshop.ecommerce.user.model.LocalUserDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

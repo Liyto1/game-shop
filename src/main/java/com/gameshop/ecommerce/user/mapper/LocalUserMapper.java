@@ -1,7 +1,7 @@
-package com.gameshop.www.eCommerce.user.mapper;
+package com.gameshop.ecommerce.user.mapper;
 
-import com.gameshop.www.eCommerce.user.model.LocalUser;
-import com.gameshop.www.eCommerce.user.model.LocalUserDto;
+import com.gameshop.ecommerce.user.model.LocalUser;
+import com.gameshop.ecommerce.user.model.LocalUserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
