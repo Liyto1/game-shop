@@ -8,10 +8,10 @@
         <version>3.2.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.gameshop.www</groupId>
-    <artifactId>eCommerce</artifactId>
+    <groupId>com.gameshop</groupId>
+    <artifactId>ecommerce</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>eCommerce</name>
+    <name>ecommerce</name>
     <description>Gaming attributes shop</description>
     <properties>
         <java.version>17</java.version>
