@@ -3,13 +3,13 @@ package com.gameshop.ecommerce.product.controller;
 
 import com.gameshop.ecommerce.product.dto.ProductCatalogDTO;
 import com.gameshop.ecommerce.product.dto.ProductDetailDTO;
+import com.gameshop.ecommerce.product.dto.ProductModelAssembler;
 import com.gameshop.ecommerce.product.filter.FilterService;
 import com.gameshop.ecommerce.product.filter.ProductFilterDTO;
-import com.gameshop.ecommerce.user.model.LocalUser;
-import com.gameshop.ecommerce.product.dto.ProductModelAssembler;
 import com.gameshop.ecommerce.product.model.Product;
 import com.gameshop.ecommerce.product.service.ProductMapperService;
 import com.gameshop.ecommerce.product.service.ProductService;
+import com.gameshop.ecommerce.user.model.LocalUser;
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -84,8 +84,8 @@ public class ProductController {
     }
 
     @CrossOrigin
-    @GetMapping("/ids")
-    public ResponseEntity<CollectionModel<ProductCatalogDTO>> getProductsByIds(@RequestBody List<UUID> ids,
+    @GetMapping("/by-ids")
+    public ResponseEntity<CollectionModel<ProductCatalogDTO>> getProductsByIds(@RequestParam List<UUID> ids,
                                                                                @AuthenticationPrincipal LocalUser user) {
 
         List<ProductCatalogDTO> products = productService.getProductsByIds(ids)
