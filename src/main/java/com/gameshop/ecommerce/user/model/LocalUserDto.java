@@ -13,18 +13,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LocalUserDto {
 
-    @NotBlank
     @Size(max = 100)
     private String firstName;
 
-    @NotBlank
     @Size(max = 100)
     private String lastName;
 
-    @NotBlank
     @Size(max = 1000)
-    private String password;
-    @NotBlank
+    private String oldPassword;
+
+    @Size(max = 1000)
+    private String newPassword;
+
     @Size(max = 320)
     private String email;
 
