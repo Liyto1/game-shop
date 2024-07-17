@@ -1,5 +1,7 @@
 package com.gameshop.ecommerce.user.service;
 
+import com.gameshop.ecommerce.address.Address;
+import com.gameshop.ecommerce.address.dto.AddressDto;
 import com.gameshop.ecommerce.security.EncryptionService;
 import com.gameshop.ecommerce.user.dao.LocalUserDAO;
 import com.gameshop.ecommerce.user.model.LocalUser;
@@ -26,6 +28,13 @@ public class MyAccountService {
         this.localUserDAO = localUserDAO;
         this.localUserMapper = localUserMapper;
         this.encryptionService = encryptionService;
+    }
+
+    public LocalUserDto getInfo(UUID userId){
+        LocalUser user = localUserDAO.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return userBuilder(user);
     }
 
     public LocalUserDto updateInfo(UUID userId, LocalUserDto userDto){
@@ -90,5 +99,13 @@ public class MyAccountService {
             LocalUser updatedUser = localUserDAO.save(user);
             return localUserMapper.entityToDto(updatedUser);
         }
+    }
+    public LocalUserDto userBuilder(LocalUser user) {
+        return LocalUserDto.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
+                .build();
     }
 }

@@ -20,6 +20,10 @@ public class MyAccountController {
 
     private final MyAccountService myAccountService;
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<LocalUserDto> getInfo(@PathVariable UUID userId){
+        return ResponseEntity.ok(myAccountService.getInfo(userId));
+    }
     @PutMapping("/{userId}")
     public ResponseEntity<LocalUserDto> updateInfo(@PathVariable UUID userId, @RequestBody LocalUserDto userDto){
         LocalUserDto updatedUser = myAccountService.updateInfo(userId, userDto);
