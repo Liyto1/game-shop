@@ -2,6 +2,7 @@ package com.gameshop.ecommerce.user.controller;
 
 import com.gameshop.ecommerce.user.model.LocalUserDto;
 import com.gameshop.ecommerce.user.service.MyAccountService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,16 @@ public class MyAccountController {
     public ResponseEntity<LocalUserDto> getInfo(@PathVariable UUID userId){
         return ResponseEntity.ok(myAccountService.getInfo(userId));
     }
+
     @PutMapping("/{userId}")
     public ResponseEntity<LocalUserDto> updateInfo(@PathVariable UUID userId, @RequestBody LocalUserDto userDto){
         LocalUserDto updatedUser = myAccountService.updateInfo(userId, userDto);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteInfo(@PathVariable UUID userId) {
+        myAccountService.deleteInfo(userId);
+        return ResponseEntity.noContent().build();
     }
 }

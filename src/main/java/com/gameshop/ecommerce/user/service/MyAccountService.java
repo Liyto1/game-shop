@@ -37,6 +37,10 @@ public class MyAccountService {
         return userBuilder(user);
     }
 
+    public void deleteInfo(UUID userId){
+        localUserDAO.deleteById(userId);
+    }
+
     public LocalUserDto updateInfo(UUID userId, LocalUserDto userDto){
         LocalUser user = localUserDAO.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
