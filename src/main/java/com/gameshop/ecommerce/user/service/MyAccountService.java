@@ -23,10 +23,28 @@ public class MyAccountService {
 
 
     public LocalUserDto updateInfo(LocalUser user, LocalUserDto userDto) throws Exception {
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setPhoneNumber(userDto.getPhoneNumber());
-        user.setEmail(user.getEmail());
+        if(userDto.getFirstName() != null) {
+            user.setFirstName(userDto.getFirstName());
+        }else {
+            user.setFirstName(user.getFirstName());
+        }
+        if(userDto.getLastName() != null) {
+            user.setLastName(userDto.getLastName());
+        }
+        else {
+            user.setLastName(user.getLastName());
+        }
+        if(userDto.getPhoneNumber() != null) {
+            user.setPhoneNumber(userDto.getPhoneNumber());
+        }else{
+            user.setPhoneNumber(user.getPhoneNumber());
+        }
+        if(userDto.getEmail() != null){
+            user.setEmail(userDto.getEmail());
+        }else{
+            user.setEmail(user.getEmail());
+        }
+
         if(userDto.getNewPassword() != null) {
             if (encryptionService.checkPassword(userDto.getOldPassword(), user.getPassword())) {
                 user.setPassword(encryptionService.encryptPassword(userDto.getNewPassword()));
