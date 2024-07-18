@@ -19,26 +19,28 @@ public class CartController {
 
     private final CartService cartService;
 
-
+    @CrossOrigin
     @PostMapping()
     public ResponseEntity<CartDto> addToCart(@AuthenticationPrincipal LocalUser user, @RequestBody List<CartBody> cartBodyList) {
         CartDto cart = cartService.addProductToCart(user, cartBodyList);
         return ResponseEntity.ok(cart);
     }
 
-
+    @CrossOrigin
     @DeleteMapping("/clear")
     public ResponseEntity<Cart> clearCart(@AuthenticationPrincipal LocalUser user) {
         Cart cart = cartService.clearCart(user);
         return ResponseEntity.ok(cart);
     }
 
+    @CrossOrigin
     @GetMapping()
     public ResponseEntity<CartDto> getCartDetails(@AuthenticationPrincipal LocalUser user) {
         CartDto cart = cartService.getCartDetails(user);
         return ResponseEntity.ok(cart);
     }
 
+    @CrossOrigin
     @DeleteMapping()
     public ResponseEntity<Cart> removeFromCart(@AuthenticationPrincipal LocalUser user, @RequestBody List<CartBody> cartBodies) {
         Cart cart = cartService.removeProductFromCart(user, cartBodies);
