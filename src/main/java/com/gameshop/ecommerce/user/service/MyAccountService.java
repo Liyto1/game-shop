@@ -1,8 +1,5 @@
 package com.gameshop.ecommerce.user.service;
 
-import com.gameshop.ecommerce.address.Address;
-import com.gameshop.ecommerce.address.dto.AddressDto;
-import com.gameshop.ecommerce.exception.UserNotFoundException;
 import com.gameshop.ecommerce.security.EncryptionService;
 import com.gameshop.ecommerce.user.dao.LocalUserDAO;
 import com.gameshop.ecommerce.user.model.LocalUser;
@@ -10,10 +7,8 @@ import com.gameshop.ecommerce.user.mapper.LocalUserMapper;
 import com.gameshop.ecommerce.user.model.LocalUserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
 
 @Service
 @Slf4j
