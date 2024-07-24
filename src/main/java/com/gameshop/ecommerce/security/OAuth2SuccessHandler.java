@@ -1,19 +1,18 @@
 package com.gameshop.ecommerce.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gameshop.ecommerce.auth.model.AuthResponse;
-import com.gameshop.ecommerce.user.dao.LocalUserDAO;
-import com.gameshop.ecommerce.user.model.LocalUser;
-import jakarta.servlet.ServletException;
+import com.gameshop.ecommerce.auth.models.AuthResponse;
+import com.gameshop.ecommerce.user.store.LocalUserRepository;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -21,21 +20,24 @@ import java.util.Optional;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final JWTService jwtService;
-    private final LocalUserDAO localUserDao;
+    private final LocalUserRepository localUserRepository;
     private final ObjectMapper objectMapper;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    @SneakyThrows
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication authentication) {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = oAuth2User.getAttribute("email");
 
-        Optional<LocalUser> opUser = localUserDao.findByEmailIgnoreCase(email);
+        Optional<LocalUserEntity> opUser = localUserRepository.findByEmailIgnoreCase(email);
 
-        LocalUser user;
+        LocalUserEntity user;
         if (opUser.isPresent()) {
             user = opUser.get();
         } else {
-            user = LocalUser.builder()
+            user = LocalUserEntity.builder()
                     .firstName(oAuth2User.getAttribute("given_name"))
                     .lastName(oAuth2User.getAttribute("family_name"))
                     .email(email)
@@ -43,7 +45,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                     .authProvider("Google")
                     .isEmailVerified(true)
                     .build();
-            localUserDao.save(user);
+            localUserRepository.save(user);
         }
 
         AuthResponse authResponse = new AuthResponse();

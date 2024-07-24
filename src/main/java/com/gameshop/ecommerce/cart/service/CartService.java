@@ -1,15 +1,13 @@
 package com.gameshop.ecommerce.cart.service;
 
-import com.gameshop.ecommerce.cart.model.Cart;
-import com.gameshop.ecommerce.cart.model.dto.CartDto;
-import com.gameshop.ecommerce.cart.model.dto.CartItemDto;
-import com.gameshop.ecommerce.exception.ProductNotFoundException;
+import com.gameshop.ecommerce.cart.store.CartEntity;
+import com.gameshop.ecommerce.cart.store.dto.CartDto;
+import com.gameshop.ecommerce.cart.store.dto.CartItemDto;
 import com.gameshop.ecommerce.product.dto.ProductCatalogDTO;
-import com.gameshop.ecommerce.user.dao.LocalUserDAO;
-import com.gameshop.ecommerce.user.model.LocalUser;
-import com.gameshop.ecommerce.cart.dao.CartDAO;
-import com.gameshop.ecommerce.cart.model.CartBody;
-import com.gameshop.ecommerce.cart.model.CartItem;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
+import com.gameshop.ecommerce.cart.store.CartRepository;
+import com.gameshop.ecommerce.cart.store.dto.CartBody;
+import com.gameshop.ecommerce.cart.store.CartItemEntity;
 import com.gameshop.ecommerce.product.dao.ProductDAO;
 import com.gameshop.ecommerce.product.model.Product;
 import jakarta.transaction.Transactional;
@@ -22,103 +20,106 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.gameshop.ecommerce.exception.RequestException.badRequestException;
+
 @RequiredArgsConstructor
 @Service
 public class CartService {
-    private final CartDAO cartDAO;
+
+    private final CartRepository cartRepository;
     private final ProductDAO productDAO;
-    private final LocalUserDAO localUserDAO;
 
-
-    public Cart getCartByUser(LocalUser user) {
-        return cartDAO.findByUser_Id(user.getId()).orElseGet(() -> {
-            Cart cart = new Cart();
-            cart.setUser(user);
-            return cartDAO.save(cart);
+    public CartEntity getCartByUser(LocalUserEntity user) {
+        return cartRepository.findByUserId(user.getId()).orElseGet(() -> {
+            CartEntity cartEntity = new CartEntity();
+            cartEntity.setUser(user);
+            return cartRepository.save(cartEntity);
         });
     }
 
     @Transactional
-    public CartDto addProductToCart(LocalUser user, List<CartBody> cartBodies) {
-        Cart cart = getCartByUser(user);
+    public CartDto addProductToCart(LocalUserEntity user, List<CartBody> cartBodies) {
+        CartEntity cartEntity = getCartByUser(user);
 
         List<Product> products = productDAO.findAllById(cartBodies.stream()
-                .map(CartBody::getId)
+                .map(CartBody::id)
                 .collect(Collectors.toList()));
 
         Map<UUID, Product> productMap = products.stream()
                 .collect(Collectors.toMap(Product::getId, product -> product));
 
         for (CartBody cartBody : cartBodies) {
-            Product product = productMap.get(cartBody.getId());
+            Product product = productMap.get(cartBody.id());
             if (product == null) {
-                throw new ProductNotFoundException("Product not found with id: " + cartBody.getId());
+                throw badRequestException("Product not found with id: " + cartBody.id());
             }
 
-            Optional<CartItem> existingCartItem = cart.getCartItems().stream()
+            Optional<CartItemEntity> existingCartItem = cartEntity.getCartItemEntities().stream()
                     .filter(cartItem -> cartItem.getProduct().equals(product))
                     .findFirst();
 
             if (existingCartItem.isPresent()) {
-                CartItem cartItem = existingCartItem.get();
-                cartItem.setQuantity(cartItem.getQuantity() + cartBody.getQuantity());
+                CartItemEntity cartItemEntity = existingCartItem.get();
+                cartItemEntity.setQuantity(cartItemEntity.getQuantity() + cartBody.quantity());
             } else {
-                CartItem cartItem = new CartItem();
-                cartItem.setProduct(product);
-                cartItem.setQuantity(cartBody.getQuantity());
-                cartItem.setCart(cart);
-                cart.getCartItems().add(cartItem);
+                CartItemEntity cartItemEntity = new CartItemEntity();
+                cartItemEntity.setProduct(product);
+                cartItemEntity.setQuantity(cartBody.quantity());
+                cartItemEntity.setCartEntity(cartEntity);
+                cartEntity.getCartItemEntities().add(cartItemEntity);
             }
         }
-        return convertToCartDto(cartDAO.save(cart));
+        return convertToCartDto(cartRepository.save(cartEntity));
     }
 
     @Transactional
-    public Cart removeProductFromCart(LocalUser user, List<CartBody> cartBodies) {
-        Cart cart = getCartByUser(user);
+    public CartEntity removeProductFromCart(LocalUserEntity user, List<CartBody> cartBodies) {
+        CartEntity cartEntity = getCartByUser(user);
 
-        Map<UUID, CartItem> cartItemMap = cart.getCartItems().stream()
+        Map<UUID, CartItemEntity> cartItemMap = cartEntity.getCartItemEntities().stream()
                 .collect(Collectors.toMap(cartItem -> cartItem.getProduct().getId(), cartItem -> cartItem));
 
         cartBodies.forEach(cartBody -> {
-            CartItem cartItem = cartItemMap.get(cartBody.getId());
-            if (cartItem != null) {
-                int newQuantity = cartItem.getQuantity() - cartBody.getQuantity();
+            CartItemEntity cartItemEntity = cartItemMap.get(cartBody.id());
+            if (cartItemEntity != null) {
+                int newQuantity = cartItemEntity.getQuantity() - cartBody.quantity();
                 if (newQuantity > 0) {
-                    cartItem.setQuantity(newQuantity);
+                    cartItemEntity.setQuantity(newQuantity);
                 } else {
-                    cart.getCartItems().remove(cartItem);
+                    cartEntity.getCartItemEntities().remove(cartItemEntity);
                 }
             }
         });
 
-        return cartDAO.save(cart);
+        return cartRepository.save(cartEntity);
     }
 
     @Transactional
-    public Cart clearCart(LocalUser user) {
-        Cart cart = getCartByUser(user);
-        cart.getCartItems().clear();
-        return cartDAO.save(cart);
+    public CartEntity clearCart(LocalUserEntity user) {
+        CartEntity cartEntity = getCartByUser(user);
+        cartEntity.getCartItemEntities().clear();
+        return cartRepository.save(cartEntity);
     }
 
-    public CartDto getCartDetails(LocalUser user) {
+    public CartDto getCartDetails(LocalUserEntity user) {
         return convertToCartDto(getCartByUser(user));
     }
 
-    private CartDto convertToCartDto(Cart cart) {
-        return new CartDto(cart.getCartItems().stream()
+    private CartDto convertToCartDto(CartEntity cartEntity) {
+        return new CartDto(cartEntity.getCartItemEntities().stream()
                 .map(this::createCartItemDto)
-                .collect(Collectors.toSet()), cart.getId());
+                .collect(Collectors.toSet()), cartEntity.getId());
     }
 
-    private CartItemDto createCartItemDto(CartItem cartItem) {
-        ProductCatalogDTO productDto = new ProductCatalogDTO();
-        productDto.setId(cartItem.getProduct().getId());
-        productDto.setName(cartItem.getProduct().getName());
-        productDto.setPrice(cartItem.getProduct().getPrice());
-        productDto.setImageUrl(cartItem.getProduct().getImageUrl());
-        productDto.setPriceWithSale(cartItem.getProduct().getPriceWithSale());
-        return new CartItemDto(cartItem.getId(), productDto, cartItem.getQuantity());
+    private CartItemDto createCartItemDto(CartItemEntity cartItemEntity) {
+        final var productDto = ProductCatalogDTO.builder()
+                .id(cartItemEntity.getProduct().getId())
+                .name(cartItemEntity.getProduct().getName())
+                .imageUrl(cartItemEntity.getProduct().getImageUrl())
+                .price(cartItemEntity.getProduct().getPrice())
+                .priceWithSale(cartItemEntity.getProduct().getPriceWithSale())
+                .build();
+
+        return new CartItemDto(cartItemEntity.getId(), productDto, cartItemEntity.getQuantity());
     }
 }

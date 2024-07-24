@@ -1,6 +1,6 @@
 package com.gameshop.ecommerce.product.model;
 
-import com.gameshop.ecommerce.review.model.Review;
+import com.gameshop.ecommerce.review.store.ReviewEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -67,7 +67,7 @@ public class Product {
     private Brand brand;
 
     @OneToMany(mappedBy = "product", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
-    private List<Review> reviews = new ArrayList<>();
+    private List<ReviewEntity> reviewEntities = new ArrayList<>();
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "category_id", nullable = false)
@@ -77,8 +77,8 @@ public class Product {
     private Double averageRate;
 
     public void updateAvgRate() {
-        this.averageRate = reviews.stream()
-                .mapToInt(Review::getRate)
+        this.averageRate = reviewEntities.stream()
+                .mapToInt(ReviewEntity::getRate)
                 .average()
                 .orElse(0.0);
     }

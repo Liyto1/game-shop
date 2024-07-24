@@ -1,20 +1,17 @@
 package com.gameshop.ecommerce.user.service;
 
-import com.gameshop.ecommerce.auth.dao.VerificationTokenDAO;
-import com.gameshop.ecommerce.auth.model.LoginBody;
-import com.gameshop.ecommerce.auth.model.PasswordResetBody;
-import com.gameshop.ecommerce.auth.model.RegistrationBody;
-import com.gameshop.ecommerce.auth.model.VerificationToken;
-import com.gameshop.ecommerce.exception.EmailFailureException;
-import com.gameshop.ecommerce.exception.EmailNotFoundException;
-import com.gameshop.ecommerce.exception.UserAlreadyExistException;
-import com.gameshop.ecommerce.exception.UserNotVerifiedException;
-import com.gameshop.ecommerce.security.EncryptionService;
+import com.gameshop.ecommerce.auth.repository.VerificationTokenRepository;
+import com.gameshop.ecommerce.auth.models.LoginBody;
+import com.gameshop.ecommerce.auth.models.PasswordResetBody;
+import com.gameshop.ecommerce.auth.models.RegistrationBody;
+import com.gameshop.ecommerce.auth.models.VerificationToken;
 import com.gameshop.ecommerce.security.JWTService;
-import com.gameshop.ecommerce.user.dao.LocalUserDAO;
-import com.gameshop.ecommerce.user.model.LocalUser;
+import com.gameshop.ecommerce.security.MyPasswordEncoder;
+import com.gameshop.ecommerce.user.store.LocalUserRepository;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,49 +19,62 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import static com.gameshop.ecommerce.exception.RequestException.badRequestException;
+import static com.gameshop.ecommerce.exception.RequestException.notFoundRequestException;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
 public class UserService {
-    private final LocalUserDAO localUserDAO;
+
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final LocalUserRepository localUserRepository;
     private final EncryptionService encryptionService;
-    private final JWTService jwtService;
     private final EmailService emailService;
-    private final VerificationTokenDAO verificationTokenDAO;
+    private final MyPasswordEncoder passwordEncoder;
+    private final JWTService jwtService;
 
-
-    public LocalUser registerUser(RegistrationBody registrationBody) throws UserAlreadyExistException, EmailFailureException {
-        if (localUserDAO.findByEmailIgnoreCase(registrationBody.getEmail()).isPresent()
-                || localUserDAO.findByPhoneNumber(registrationBody.getPhoneNumber()).isPresent()) {
-            throw new UserAlreadyExistException();
+    @Transactional
+    @SneakyThrows
+    public void registerUser(RegistrationBody registration) {
+        if (localUserRepository.findByEmailIgnoreCase(registration.getEmail()).isPresent()
+                || localUserRepository.findByPhone(registration.getPhoneNumber()).isPresent()) {
+            throw badRequestException("404");
         }
-        LocalUser user = new LocalUser();
-        user.setFirstName(registrationBody.getFirstName());
-        user.setLastName(registrationBody.getLastName());
-        user.setEmail(registrationBody.getEmail());
-        user.setAuthProvider("Registration Form");
-        user.setAuthType("Site");
-        user.setPhoneNumber(registrationBody.getPhoneNumber());
-        user.setPassword(encryptionService.encryptPassword(registrationBody.getPassword()));
+
+        final var user = LocalUserEntity.builder()
+                .firstName(registration.getFirstName())
+                .lastName(registration.getLastName())
+                .email(registration.getEmail())
+                .authProvider("Registration Form")
+                .phone(registration.getPhoneNumber())
+                .password(passwordEncoder.passwordEncoder().encode(registration.getPassword()))
+                .authType("Site")
+                .build();
+
         VerificationToken verificationToken = generateVerificationToken(user);
         emailService.sendVerificationEmail(verificationToken);
-        return localUserDAO.save(user);
+        localUserRepository.save(user);
     }
 
-    private VerificationToken generateVerificationToken(LocalUser user) {
-        VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setToken(jwtService.generateVerificationJWT(user));
-        verificationToken.setCreatedTimestamp(new Timestamp(System.currentTimeMillis()));
-        verificationToken.setUser(user);
+    private VerificationToken generateVerificationToken(LocalUserEntity user) {
+        final var verificationToken = VerificationToken.builder()
+                .token(jwtService.generateVerificationJWT(user))
+                .createdTimestamp(new Timestamp(System.currentTimeMillis()))
+                .user(user)
+                .build();
+
         user.getVerificationTokens().add(verificationToken);
+
         return verificationToken;
     }
 
-    public String loginUser(LoginBody loginBody) throws UserNotVerifiedException, EmailFailureException {
-        Optional<LocalUser> opUser = localUserDAO.findByEmailIgnoreCase(loginBody.getEmail());
+    @SneakyThrows
+    public String loginUser(LoginBody loginBody) {
+        Optional<LocalUserEntity> opUser = localUserRepository.findByEmailIgnoreCase(loginBody.getEmail());
         if (opUser.isPresent()) {
-            LocalUser user = opUser.get();
-            if (encryptionService.checkPassword(loginBody.getPassword(), user.getPassword())) {
+            LocalUserEntity user = opUser.get();
+            if (passwordEncoder.checkPassword(loginBody.getPassword(), user.getPassword())) {
                 if (Boolean.TRUE.equals(user.getIsEmailVerified())) {
                     return jwtService.generateJWT(user);
                 } else {
@@ -73,10 +83,10 @@ public class UserService {
                             verificationTokens.get(0).getCreatedTimestamp().before(new Timestamp(System.currentTimeMillis() - (60 * 60 * 1000)));
                     if (resend) {
                         VerificationToken verificationToken = generateVerificationToken(user);
-                        verificationTokenDAO.save(verificationToken);
+                        verificationTokenRepository.save(verificationToken);
                         emailService.sendVerificationEmail(verificationToken);
                     }
-                    throw new UserNotVerifiedException(resend);
+                    throw notFoundRequestException(String.valueOf(resend));
                 }
             }
         }
@@ -85,38 +95,43 @@ public class UserService {
 
     @Transactional
     public boolean verifyUser(String token) {
-        Optional<VerificationToken> opToken = verificationTokenDAO.findByToken(token);
+        Optional<VerificationToken> opToken = verificationTokenRepository.findByToken(token);
         if (opToken.isPresent()) {
             VerificationToken verificationToken = opToken.get();
-            LocalUser user = verificationToken.getUser();
+            LocalUserEntity user = verificationToken.getUser();
             if (Boolean.FALSE.equals(user.getIsEmailVerified())) {
                 user.setIsEmailVerified(true);
-                localUserDAO.save(user);
-                verificationTokenDAO.deleteByUser(user);
+                localUserRepository.save(user);
+                verificationTokenRepository.deleteByUser(user);
                 return true;
             }
         }
         return false;
     }
 
-    public void forgotPassword(String email) throws EmailNotFoundException, EmailFailureException {
-        Optional<LocalUser> opUser = localUserDAO.findByEmailIgnoreCase(email);
+    @SneakyThrows
+    public void forgotPassword(String email) {
+        Optional<LocalUserEntity> opUser = localUserRepository.findByEmailIgnoreCase(email);
+
         if (opUser.isPresent()) {
-            LocalUser user = opUser.get();
+            LocalUserEntity user = opUser.get();
             String token = jwtService.generatePasswordResetJWT(user);
             emailService.sendPasswordResetEmail(user, token);
         } else {
-            throw new EmailNotFoundException();
+            throw badRequestException("404");
         }
     }
 
+    @Transactional
     public void resetPassword(PasswordResetBody body) {
-        Optional<LocalUser> opUser = localUserDAO.findByEmailIgnoreCase(jwtService.getResetPasswordEmail(body.getToken()));
+        final var opUser = localUserRepository.findByEmailIgnoreCase(
+                jwtService.getResetPasswordEmail(body.getToken())
+        );
+
         if (opUser.isPresent()) {
-            LocalUser user = opUser.get();
-            user.setPassword(encryptionService.encryptPassword(body.getPassword()));
-            localUserDAO.save(user);
+            LocalUserEntity user = opUser.get();
+            user.setPassword(passwordEncoder.passwordEncoder().encode(body.getPassword()));
+            localUserRepository.save(user);
         }
     }
-
 }

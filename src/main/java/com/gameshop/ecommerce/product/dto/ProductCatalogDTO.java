@@ -1,10 +1,7 @@
 package com.gameshop.ecommerce.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
@@ -15,6 +12,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @Relation(collectionRelation = "products")
 @JsonInclude(JsonInclude.Include.NON_NULL)

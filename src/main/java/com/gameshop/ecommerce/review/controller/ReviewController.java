@@ -1,13 +1,11 @@
 package com.gameshop.ecommerce.review.controller;
 
-import com.gameshop.ecommerce.review.model.dto.ReviewMainPageDTO;
-import com.gameshop.ecommerce.review.model.dto.ReviewModelAssembler;
-import com.gameshop.ecommerce.review.service.ReviewMapperService;
+import com.gameshop.ecommerce.review.store.dto.ReviewMainPageDTO;
+import com.gameshop.ecommerce.review.store.dto.ReviewModelAssembler;
+import com.gameshop.ecommerce.review.store.mapper.ReviewMapper;
 import com.gameshop.ecommerce.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,15 +18,14 @@ import java.util.List;
 public class ReviewController {
 
     private final ReviewModelAssembler reviewModelAssembler;
-    private final ReviewMapperService reviewMapperService;
+    private final ReviewMapper reviewMapper;
     private final ReviewService reviewService;
 
-    @CrossOrigin
     @GetMapping("/best-rate")
-    public ResponseEntity<CollectionModel<ReviewMainPageDTO>> getBestRateReview() {
-        List<ReviewMainPageDTO> reviewMainPageDTOS = reviewService.getTopRateReviews().stream().map(reviewMapperService::toModel).toList();
+    public CollectionModel<ReviewMainPageDTO> getBestRateReview() {
+        List<ReviewMainPageDTO> reviewMainPageDTOS = reviewService.getTopRateReviews().stream()
+                .map(reviewMapper).toList();
 
-        CollectionModel<ReviewMainPageDTO> collectionModel = reviewModelAssembler.toCollectionModel(reviewMainPageDTOS);
-        return ResponseEntity.ok(collectionModel);
+        return reviewModelAssembler.toCollectionModel(reviewMainPageDTOS);
     }
 }

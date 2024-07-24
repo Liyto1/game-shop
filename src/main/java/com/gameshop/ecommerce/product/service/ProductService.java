@@ -1,7 +1,6 @@
 package com.gameshop.ecommerce.product.service;
 
-import com.gameshop.ecommerce.order.purchase.PurchaseProj;
-import com.gameshop.ecommerce.order.dao.WebOrderQuantityDAO;
+import com.gameshop.ecommerce.order.store.WebOrderQuantityRepository;
 import com.gameshop.ecommerce.product.dao.ProductDAO;
 import com.gameshop.ecommerce.product.model.Product;
 import com.gameshop.ecommerce.product.model.QProduct;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 public class ProductService {
     private static final String PREFIX = "characteristics.";
     private final ProductDAO productDAO;
-    private final WebOrderQuantityDAO webOrderQuantityDAO;
+    private final WebOrderQuantityRepository webOrderQuantityRepository;
 
     public Page<Product> getProducts(Predicate predicate, Pageable pageable, Map<String, String> allRequestParams) {
         Predicate builder = createPredicateQuery(predicate, allRequestParams);
@@ -47,7 +46,7 @@ public class ProductService {
     }
 
     public List<Product> getMostPurchasedProducts() {
-        List<PurchaseProj> productPurchases = webOrderQuantityDAO.findTopPurchasedProducts();
+        List<PurchaseProj> productPurchases = webOrderQuantityRepository.findTopPurchasedProducts();
         List<UUID> ids = productPurchases.stream()
                 .map(PurchaseProj::getId)
                 .collect(Collectors.toList());

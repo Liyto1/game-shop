@@ -1,14 +1,12 @@
 package com.gameshop.ecommerce.user.mapper;
 
-import com.gameshop.ecommerce.user.model.LocalUser;
-import com.gameshop.ecommerce.user.model.LocalUserDto;
+import com.gameshop.ecommerce.user.store.LocalUserDto;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface LocalUserMapper {
-    LocalUserMapper INSTANCE = Mappers.getMapper(LocalUserMapper.class);
-
-    LocalUserDto entityToDto(LocalUser localUser);
-    LocalUser dtoToEntity(LocalUserDto localUserDto);
+    @Mapping(target = "newPassword", source = "password")
+    LocalUserDto entityToDto(LocalUserEntity localUserEntity);
 }

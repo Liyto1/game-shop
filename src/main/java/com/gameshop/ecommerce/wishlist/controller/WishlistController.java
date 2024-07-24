@@ -1,7 +1,7 @@
 package com.gameshop.ecommerce.wishlist.controller;
 
-import com.gameshop.ecommerce.user.model.LocalUser;
-import com.gameshop.ecommerce.wishlist.model.WishList;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
+import com.gameshop.ecommerce.wishlist.store.WishListEntity;
 import com.gameshop.ecommerce.wishlist.service.WishlistService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ public class WishlistController {
 
     @PostMapping("/add/{productId}")
     public ResponseEntity<Object> addProductToWishlist(@PathVariable UUID productId,
-                                                       @AuthenticationPrincipal LocalUser user) {
+                                                       @AuthenticationPrincipal LocalUserEntity user) {
         if (user != null) {
             wishlistService.addProductToWishlist(productId, user);
             return ResponseEntity.status(HttpStatus.CREATED).body("Product added to wishlist " + user.getEmail());
@@ -31,7 +31,7 @@ public class WishlistController {
 
     @DeleteMapping("/remove/{productId}")
     public ResponseEntity<Object> removeProductFromWishlist(@PathVariable UUID productId,
-                                                            @AuthenticationPrincipal LocalUser user) {
+                                                            @AuthenticationPrincipal LocalUserEntity user) {
         if (user != null) {
             wishlistService.removeProductFromWishlist(productId, user);
             return ResponseEntity.status(HttpStatus.OK).body("Product removed from wishlist " + user.getEmail());
@@ -41,10 +41,10 @@ public class WishlistController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Object> getWishlist(@AuthenticationPrincipal LocalUser user) {
+    public ResponseEntity<Object> getWishlist(@AuthenticationPrincipal LocalUserEntity user) {
         if (user != null) {
-            List<WishList> wishList = wishlistService.getUserWishlist(user);
-            return ResponseEntity.status(HttpStatus.OK).body(wishList);
+            List<WishListEntity> wishListEntity = wishlistService.getUserWishlist(user);
+            return ResponseEntity.status(HttpStatus.OK).body(wishListEntity);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

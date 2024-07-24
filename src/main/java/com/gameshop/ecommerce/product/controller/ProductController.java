@@ -9,7 +9,7 @@ import com.gameshop.ecommerce.product.filter.ProductFilterDTO;
 import com.gameshop.ecommerce.product.model.Product;
 import com.gameshop.ecommerce.product.service.ProductMapperService;
 import com.gameshop.ecommerce.product.service.ProductService;
-import com.gameshop.ecommerce.user.model.LocalUser;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
 import com.querydsl.core.types.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,7 +43,7 @@ public class ProductController {
     @GetMapping()
     public ResponseEntity<PagedModel<ProductCatalogDTO>> getProducts(@QuerydslPredicate(root = Product.class) Predicate predicate,
                                                                      @RequestParam(required = false) Map<String, String> allRequestParams,
-                                                                     Pageable pageable, @AuthenticationPrincipal LocalUser user) {
+                                                                     Pageable pageable, @AuthenticationPrincipal LocalUserEntity user) {
 
         Page<ProductCatalogDTO> products = productService.getProducts(predicate, pageable, allRequestParams)
                 .map(product -> productMapperService.toModel(product, user));
@@ -54,7 +54,7 @@ public class ProductController {
     @CrossOrigin
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<ProductDetailDTO>> getProductById(@PathVariable UUID id,
-                                                                        @AuthenticationPrincipal LocalUser user) {
+                                                                        @AuthenticationPrincipal LocalUserEntity user) {
 
         return productService.getProductById(id)
                 .map(product -> productMapperService.toModelDetail(product, user))
@@ -73,7 +73,7 @@ public class ProductController {
 
     @CrossOrigin
     @GetMapping("/most-purchase")
-    public ResponseEntity<CollectionModel<ProductCatalogDTO>> getMostPurchasedProducts(@AuthenticationPrincipal LocalUser user) {
+    public ResponseEntity<CollectionModel<ProductCatalogDTO>> getMostPurchasedProducts(@AuthenticationPrincipal LocalUserEntity user) {
         List<ProductCatalogDTO> products = productService.getMostPurchasedProducts()
                 .stream()
                 .map(product -> productMapperService.toModel(product, user))
@@ -86,7 +86,7 @@ public class ProductController {
     @CrossOrigin
     @GetMapping("/by-ids")
     public ResponseEntity<CollectionModel<ProductCatalogDTO>> getProductsByIds(@RequestParam List<UUID> ids,
-                                                                               @AuthenticationPrincipal LocalUser user) {
+                                                                               @AuthenticationPrincipal LocalUserEntity user) {
 
         List<ProductCatalogDTO> products = productService.getProductsByIds(ids)
                 .stream()

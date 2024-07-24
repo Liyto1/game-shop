@@ -2,7 +2,7 @@ package com.gameshop.ecommerce.product.service;
 
 import com.gameshop.ecommerce.product.dto.ProductCatalogDTO;
 import com.gameshop.ecommerce.product.dto.ProductDetailDTO;
-import com.gameshop.ecommerce.user.model.LocalUser;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
 import com.gameshop.ecommerce.product.model.Product;
 import com.gameshop.ecommerce.wishlist.service.WishlistService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class ProductMapperService {
     private final WishlistService wishlistService;
 
-    public ProductCatalogDTO toModel(Product product, LocalUser user) {
+    public ProductCatalogDTO toModel(Product product, LocalUserEntity user) {
         ProductCatalogDTO productCatalogDTO = new ProductCatalogDTO();
         productCatalogDTO.setId(product.getId());
         productCatalogDTO.setName(product.getName());
@@ -29,11 +29,11 @@ public class ProductMapperService {
             productCatalogDTO.setInWishlist(false);
         }
         productCatalogDTO.setRating(product.getAverageRate());
-        productCatalogDTO.setReviewCount(product.getReviews().size());
+        productCatalogDTO.setReviewCount(product.getReviewEntities().size());
         return productCatalogDTO;
     }
 
-    public ProductDetailDTO toModelDetail(Product product, LocalUser user) {
+    public ProductDetailDTO toModelDetail(Product product, LocalUserEntity user) {
         ProductDetailDTO productDetailDTO = new ProductDetailDTO();
         productDetailDTO.setId(product.getId());
         productDetailDTO.setName(product.getName());
@@ -45,7 +45,7 @@ public class ProductMapperService {
         productDetailDTO.setCharacteristics(product.getCharacteristics());
         productDetailDTO.setShortDescription(product.getShortDescription());
         productDetailDTO.setLongDescription(product.getLongDescription());
-        productDetailDTO.setReviews(product.getReviews());
+        productDetailDTO.setReviewEntities(product.getReviewEntities());
         productDetailDTO.setAverageRate(product.getAverageRate());
         productDetailDTO.setCategory(product.getCategory().getName());
         if (user != null) {

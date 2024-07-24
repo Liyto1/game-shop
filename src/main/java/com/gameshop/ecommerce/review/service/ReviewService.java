@@ -1,7 +1,7 @@
 package com.gameshop.ecommerce.review.service;
 
-import com.gameshop.ecommerce.review.model.Review;
-import com.gameshop.ecommerce.review.dao.ReviewDAO;
+import com.gameshop.ecommerce.review.store.ReviewEntity;
+import com.gameshop.ecommerce.review.store.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +14,9 @@ import java.util.List;
 @Service
 public class ReviewService {
 
-    private final ReviewDAO reviewDAO;
+    private final ReviewRepository reviewRepository;
 
-    public List<Review> getTopRateReviews() {
-        Pageable topThree = PageRequest.of(0, 3, Sort.by("rate").descending());
-        return reviewDAO.findAllByOrderByRateDesc(topThree);
+    public List<ReviewEntity> getTopRateReviews() {
+        return reviewRepository.findAllByOrderByRateDesc(PageRequest.of(0, 3, Sort.by("rate").descending()));
     }
 }

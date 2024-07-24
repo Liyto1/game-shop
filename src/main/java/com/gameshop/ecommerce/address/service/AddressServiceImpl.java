@@ -1,86 +1,87 @@
 package com.gameshop.ecommerce.address.service;
 
-import com.gameshop.ecommerce.address.repository.AddressRepository;
-import com.gameshop.ecommerce.exception.AddressNotFoundException;
-import com.gameshop.ecommerce.user.dao.LocalUserDAO;
-import com.gameshop.ecommerce.user.model.LocalUser;
-import com.gameshop.ecommerce.address.Address;
-import com.gameshop.ecommerce.address.dto.AddressDto;
+import com.gameshop.ecommerce.address.store.AddressRepository;
+import com.gameshop.ecommerce.address.store.AddressEntity;
+import com.gameshop.ecommerce.user.store.LocalUserRepository;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
+import com.gameshop.ecommerce.address.store.AddressDto;
 import com.gameshop.ecommerce.address.mapper.AddressMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
-@RequiredArgsConstructor
+import static com.gameshop.ecommerce.exception.RequestException.badRequestException;
+import static com.gameshop.ecommerce.exception.RequestException.notFoundRequestException;
+
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper;
-    private final LocalUserDAO localUserDAO;
+    private final LocalUserRepository localUserRepository;
 
     @Override
-    public Address createAddress(AddressDto addressDto, UUID userId) {
-        LocalUser user = localUserDAO.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public AddressDto createAddress(final AddressDto addressDto, final Long userId) {
+        final var user = localUserRepository.findById(userId)
+                .orElseThrow(() -> notFoundRequestException("User not found"));
 
-        Address address = new Address();
-        address.setFirstName(addressDto.getFirstName());
-        address.setLastName(addressDto.getLastName());
-        address.setContactNumber(addressDto.getContactNumber());
-        address.setCountry(addressDto.getCountry());
-        address.setCity(addressDto.getCity());
-        address.setAddressLine(addressDto.getAddressLine());
-        address.setPostcode(addressDto.getPostcode());
-        address.setUser(user);
+        final var address = AddressEntity.builder()
+                .firstName(addressDto.firstName())
+                .lastName(addressDto.lastName())
+                .contactNumber(addressDto.contactNumber())
+                .country(addressDto.country())
+                .city(addressDto.city())
+                .addressLine(addressDto.addressLine())
+                .postcode(addressDto.postcode())
+                .user(user)
+                .build();
 
-        return addressRepository.save(address);
+        log.info("Creating new address: {}", addressDto);
+
+        return addressMapper.addressToAddressDto(addressRepository.save(address));
     }
 
     @Override
-    public AddressDto getAddress(UUID userId, UUID addressId) {
-        LocalUser user = localUserDAO.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Address address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new AddressNotFoundException("Address not found"));
-        if (address.getUser().getId() == userId) {
+    public AddressDto getAddress(Long userId, UUID addressId) {
+        final var address = addressRepository.findById(addressId)
+                .orElseThrow(() -> badRequestException("Address not found"));
+        if (Objects.equals(address.getUser().getId(), userId)) {
             return addressBuilder(address);
         } else {
-            throw new AddressNotFoundException("Address not found");
+            throw badRequestException("Address not found");
         }
     }
 
     @Override
-    public List<AddressDto> getAllAddresses(UUID userId) {
-        LocalUser user = localUserDAO.findById(userId)
+    public List<AddressDto> getAllAddresses(Long userId) {
+        LocalUserEntity user = localUserRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return addressMapper.addressesToAddressDtos(user.getAddresses());
+        return addressMapper.addressesToAddressDtos(user.getAddressEntities());
     }
 
     @Override
-    public AddressDto updateAddress(UUID userId, UUID addressId, AddressDto addressDto) {
-        LocalUser user = localUserDAO.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public AddressDto updateAddress(Long userId, UUID addressId, AddressDto addressDto) {
+        final var address = addressRepository.findById(addressId)
+                .orElseThrow(() -> badRequestException("Address not found"));
 
-        Address address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new AddressNotFoundException("Address not found"));
-
-        if (address.getUser().getId() == userId) {
-            address.setFirstName(addressDto.getFirstName());
-            address.setLastName(addressDto.getLastName());
-            address.setContactNumber(addressDto.getContactNumber());
-            address.setCountry(addressDto.getCountry());
-            address.setCity(addressDto.getCity());
-            address.setAddressLine(addressDto.getAddressLine());
-            address.setPostcode(addressDto.getPostcode());
+        if (Objects.equals(address.getUser().getId(), userId)) {
+            address.setFirstName(addressDto.firstName());
+            address.setLastName(addressDto.lastName());
+            address.setContactNumber(addressDto.contactNumber());
+            address.setCountry(addressDto.country());
+            address.setCity(addressDto.city());
+            address.setAddressLine(addressDto.addressLine());
+            address.setPostcode(addressDto.postcode());
         }
 
-        Address updatedAddress = addressRepository.save(address);
-        return addressMapper.addressToAddressDto(updatedAddress);
+        return addressMapper.addressToAddressDto(addressRepository.save(address));
     }
 
     @Override
@@ -88,15 +89,15 @@ public class AddressServiceImpl implements AddressService {
         addressRepository.deleteById(addressId);
     }
 
-    public AddressDto addressBuilder(Address address) {
+    public AddressDto addressBuilder(AddressEntity addressEntity) {
         return AddressDto.builder()
-                .firstName(address.getFirstName())
-                .lastName(address.getLastName())
-                .contactNumber(address.getContactNumber())
-                .country(address.getCountry())
-                .city(address.getCity())
-                .addressLine(address.getAddressLine())
-                .postcode(address.getPostcode())
+                .firstName(addressEntity.getFirstName())
+                .lastName(addressEntity.getLastName())
+                .contactNumber(addressEntity.getContactNumber())
+                .country(addressEntity.getCountry())
+                .city(addressEntity.getCity())
+                .addressLine(addressEntity.getAddressLine())
+                .postcode(addressEntity.getPostcode())
                 .build();
     }
 }

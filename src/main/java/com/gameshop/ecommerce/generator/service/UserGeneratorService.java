@@ -1,7 +1,7 @@
 package com.gameshop.ecommerce.generator.service;
 
-import com.gameshop.ecommerce.user.dao.LocalUserDAO;
-import com.gameshop.ecommerce.user.model.LocalUser;
+import com.gameshop.ecommerce.user.store.LocalUserRepository;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
 import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
 import org.springframework.stereotype.Service;
@@ -13,20 +13,20 @@ import java.util.List;
 @Service
 public class UserGeneratorService {
     private static final String USER_PHOTO = "https://girlsonlytravel.com/img/works/user.jfif";
-    private final LocalUserDAO localUserDAO;
+    private final LocalUserRepository localUserRepository;
 
     public void generateUsers() {
-        List<LocalUser> users = new ArrayList<>();
+        List<LocalUserEntity> users = new ArrayList<>();
         Faker faker = new Faker();
         for (int i = 0; i < 10; i++) {
-            LocalUser user = createUser(faker);
+            LocalUserEntity user = createUser(faker);
             users.add(user);
         }
-        localUserDAO.saveAll(users);
+        localUserRepository.saveAll(users);
     }
 
-    private LocalUser createUser(Faker faker) {
-        LocalUser user = new LocalUser();
+    private LocalUserEntity createUser(Faker faker) {
+        LocalUserEntity user = new LocalUserEntity();
         user.setFirstName(faker.name().firstName());
         user.setLastName(faker.name().lastName());
         user.setEmail(faker.internet().emailAddress());

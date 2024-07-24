@@ -1,7 +1,8 @@
 package com.gameshop.ecommerce.generator.service;
 
-import com.gameshop.ecommerce.user.dao.LocalUserDAO;
-import com.gameshop.ecommerce.user.model.LocalUser;
+import com.gameshop.ecommerce.review.store.ReviewEntity;
+import com.gameshop.ecommerce.user.store.LocalUserRepository;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
 import com.gameshop.ecommerce.product.dao.BrandDAO;
 import com.gameshop.ecommerce.product.dao.CategoryDAO;
 import com.gameshop.ecommerce.product.dao.ProductDAO;
@@ -9,7 +10,6 @@ import com.gameshop.ecommerce.product.model.Brand;
 import com.gameshop.ecommerce.product.model.Category;
 import com.gameshop.ecommerce.product.model.Inventory;
 import com.gameshop.ecommerce.product.model.Product;
-import com.gameshop.ecommerce.review.model.Review;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.datafaker.Faker;
@@ -20,24 +20,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RequiredArgsConstructor
+import static com.gameshop.ecommerce.utils.Constants.*;
+
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ProductGeneratorService {
-    private static final String REVIEW_TEXT = "I've been using the QuantumX Pro for a month now, and I'm blown away by " +
-            "its precision and customizable RGB lighting. The ergonomic design is perfect for my long gaming sessions. " +
-            "A must-have for serious gamers!";
+
     private final ProductDAO productDAO;
     private final BrandDAO brandDAO;
     private final CategoryDAO categoryDAO;
-    private final LocalUserDAO localUserDAO;
-    private final List<String> categories = List.of("Keyboards", "Mice", "Headsets", "Mouse mats", "Joysticks and controllers", "Gaming chairs");
-    private final List<String> brands = List.of("Logitech", "Razer", "Acer", "Asus", "Gigabyte", "MSI");
-    private final Map<String, String> images = new HashMap<>(Map.of("Mouse", "https://girlsonlytravel.com/img/works/mouse.png",
-            "Keyboard", "https://girlsonlytravel.com/img/works/keyboard.png", "Headset",
-            "https://girlsonlytravel.com/img/works/headset.png", "Joystick",
-            "https://girlsonlytravel.com/img/works/joystick.png",
-            "def", "https://static.tildacdn.com/tild6237-6265-4232-a233-663832313834/noroot.png"));
+    private final LocalUserRepository localUserRepository;
+
     List<Brand> brandsList = new ArrayList<>();
     List<Category> categoriesList = new ArrayList<>();
     List<Product> products = new ArrayList<>();
@@ -73,7 +67,7 @@ public class ProductGeneratorService {
         product.setImageUrl(setImageForCategory(product));
         product.setBrand(brandsList.get(faker.number().numberBetween(0, 6)));
         product.setCharacteristics(createCharacteristics(faker, product.getCategory().getName()));
-        product.setReviews(generateReviews(faker, product));
+        product.setReviewEntities(generateReviews(faker, product));
         Inventory inventory = createInventory(faker, product);
         product.setInventory(inventory);
         return product;
@@ -121,7 +115,6 @@ public class ProductGeneratorService {
         }
         brandDAO.saveAll(brandsList);
         categoryDAO.saveAll(categoriesList);
-
     }
 
     private Map<String, String> createCharacteristics(Faker faker, String category) {
@@ -136,14 +129,16 @@ public class ProductGeneratorService {
                 break;
             case "Keyboards":
                 characteristics.put("Layout", faker.options().option("QWERTY", "AZERTY", "QWERTZ"));
-                characteristics.put("Type", faker.options().option("Hybrid mechanical-membrane", "Optical-mechanical", "Scissors", "Mechanical", "Membrane"));
+                characteristics.put("Type", faker.options().option("Hybrid mechanical-membrane", "Optical-mechanical",
+                        "Scissors", "Mechanical", "Membrane"));
                 characteristics.put("Interface", faker.options().option("USB", "Bluetooth", "2,4 GHz"));
                 characteristics.put("Size", faker.options().option("100%", "75%", "60%"));
                 break;
             case "Headsets":
                 characteristics.put("Type", faker.options().option("In-Ear", "On-Ear", "Over-Ear"));
                 characteristics.put("Connection type", faker.options().option("Wired", "Wireless", "Combined"));
-                characteristics.put("Noise Cancelling", faker.options().option("With noise cancelling", "Without noise cancelling"));
+                characteristics.put("Noise Cancelling", faker.options().option("With noise cancelling",
+                        "Without noise cancelling"));
                 break;
         }
 
@@ -157,17 +152,20 @@ public class ProductGeneratorService {
         return inventory;
     }
 
-    public List<Review> generateReviews(Faker faker, Product product) {
-        List<LocalUser> users = localUserDAO.findAll();
-        List<Review> reviews = new ArrayList<>();
+    public List<ReviewEntity> generateReviews(Faker faker, Product product) {
+        List<LocalUserEntity> users = localUserRepository.findAll();
+        List<ReviewEntity> reviewEntities = new ArrayList<>();
+
         for (int i = 0; i < 4; i++) {
-            Review review = new Review();
-            review.setComment(REVIEW_TEXT);
-            review.setRate(faker.random().nextInt(3, 5));
-            review.setLocalUser(users.get(faker.random().nextInt(1, users.size() - 1)));
-            reviews.add(review);
-            review.setProduct(product);
+            ReviewEntity reviewEntity = new ReviewEntity();
+            reviewEntity.setComment(REVIEW_TEXT);
+            reviewEntity.setRate(faker.random().nextInt(3, 5));
+            reviewEntity.setLocalUserEntity(users.get(faker.random().nextInt(1, users.size() - 1)));
+            reviewEntities.add(reviewEntity);
+            reviewEntity.setProduct(product);
         }
-        return reviews;
+
+        return reviewEntities;
     }
 }
+

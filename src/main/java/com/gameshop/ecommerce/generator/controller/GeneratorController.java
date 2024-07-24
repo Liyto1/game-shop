@@ -19,24 +19,22 @@ public class GeneratorController {
     private final OrderGeneratorService orderGeneratorService;
     private final UserGeneratorService userGeneratorService;
 
-    @CrossOrigin
-    @PostMapping("/products")
-    public ResponseEntity<Void> generateProducts() {
+    private static final String PRODUCTS = "/products";
+    private static final String ORDERS = "/orders";
+    private static final String USERS = "/users";
+
+    @PostMapping(PRODUCTS)
+    public void generateProducts() {
         productGeneratorService.generateProducts();
-        return ResponseEntity.ok().build();
     }
 
-    @CrossOrigin
-    @PostMapping("/orders")
-    public ResponseEntity<Void> generateOrders() {
+    @PostMapping(ORDERS)
+    public void generateOrders() {
         orderGeneratorService.generateOrders();
-        return ResponseEntity.ok().build();
     }
 
-    @CrossOrigin
-    @PostMapping("/users")
-    public ResponseEntity<Void> generateUsers() {
+    @PostMapping(USERS)
+    public void generateUsers() {
         userGeneratorService.generateUsers();
-        return ResponseEntity.ok().build();
     }
 }

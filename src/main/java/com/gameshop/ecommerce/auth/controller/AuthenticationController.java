@@ -1,14 +1,13 @@
 package com.gameshop.ecommerce.auth.controller;
 
-import com.gameshop.ecommerce.user.model.LocalUser;
-import com.gameshop.ecommerce.auth.model.AuthResponse;
-import com.gameshop.ecommerce.auth.model.LoginBody;
-import com.gameshop.ecommerce.auth.model.PasswordResetBody;
-import com.gameshop.ecommerce.auth.model.RegistrationBody;
-import com.gameshop.ecommerce.exception.EmailFailureException;
-import com.gameshop.ecommerce.exception.EmailNotFoundException;
-import com.gameshop.ecommerce.exception.UserAlreadyExistException;
-import com.gameshop.ecommerce.exception.UserNotVerifiedException;
+import com.gameshop.ecommerce.exception.*;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
+import com.gameshop.ecommerce.auth.models.AuthResponse;
+import com.gameshop.ecommerce.auth.models.LoginBody;
+import com.gameshop.ecommerce.auth.models.PasswordResetBody;
+import com.gameshop.ecommerce.auth.models.RegistrationBody;
+import com.gameshop.ecommerce.user.store.LocalUserDto;
+import com.gameshop.ecommerce.user.service.AccountService;
 import com.gameshop.ecommerce.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +22,10 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequestMapping("/auth")
 public class AuthenticationController {
-    private final UserService userService;
 
-    @CrossOrigin
+    private final UserService userService;
+    private final AccountService accountService;
+
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegistrationBody registrationBody) {
         AuthResponse authResponse = new AuthResponse();
@@ -34,37 +34,29 @@ public class AuthenticationController {
             log.info("User registered successfully");
             authResponse.setSuccess(true);
             return ResponseEntity.ok(authResponse);
-        } catch (UserAlreadyExistException e) {
+        } catch (RequestException e) {
             authResponse.setSuccess(false);
             authResponse.setFailureReason("USER_ALREADY_EXISTS");
             return ResponseEntity.status(HttpStatus.CONFLICT).body(authResponse);
-        } catch (EmailFailureException e) {
-            log.info(e.getMessage());
-            authResponse.setSuccess(false);
-            authResponse.setFailureReason("EMAIL_SEND_FAILURE");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(authResponse);
         }
     }
 
-    @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginBody loginBody) {
-        String jwt = null;
+        String jwt;
         try {
             jwt = userService.loginUser(loginBody);
 
-        } catch (UserNotVerifiedException ex) {
+        } catch (RequestException ex) {
             AuthResponse response = new AuthResponse();
             response.setSuccess(false);
             String reason = "USER_NOT_VERIFIED";
-            if (ex.isNewEmailSent()) {
+            if (ex.getStatus().is1xxInformational()) {
                 reason += "EMAIL_RESENT";
             }
             response.setFailureReason(reason);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 
-        } catch (EmailFailureException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
         if (jwt == null) {
@@ -78,7 +70,6 @@ public class AuthenticationController {
         }
     }
 
-    @CrossOrigin
     @PostMapping("/verify")
     public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
         if (userService.verifyUser(token)) {
@@ -88,9 +79,8 @@ public class AuthenticationController {
         }
     }
 
-    @CrossOrigin
     @GetMapping("/me")
-    public LocalUser getLoggedUserProfile(@AuthenticationPrincipal LocalUser user) {
+    public LocalUserEntity getLoggedUserProfile(@AuthenticationPrincipal LocalUserEntity user) {
         return user;
     }
 
@@ -99,19 +89,19 @@ public class AuthenticationController {
         try {
             userService.forgotPassword(email);
             return ResponseEntity.ok().build();
-        } catch (EmailNotFoundException e) {
+        } catch (RequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email not found");
-        } catch (EmailFailureException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PostMapping("/reset")
     public ResponseEntity<Void> resetPassword(@RequestBody @Valid PasswordResetBody body) {
-
         userService.resetPassword(body);
         return ResponseEntity.ok().build();
     }
 
-
+    @PutMapping("/account")
+    public LocalUserDto updateInfo(@AuthenticationPrincipal LocalUserEntity user, @RequestBody LocalUserDto userDto) {
+        return accountService.updateInfo(user, userDto);
+    }
 }

@@ -1,11 +1,11 @@
 package com.gameshop.ecommerce.generator.service;
 
-import com.gameshop.ecommerce.user.dao.LocalUserDAO;
-import com.gameshop.ecommerce.user.model.LocalUser;
-import com.gameshop.ecommerce.order.dao.WebOrderDAO;
-import com.gameshop.ecommerce.order.dao.WebOrderQuantityDAO;
-import com.gameshop.ecommerce.order.model.WebOrder;
-import com.gameshop.ecommerce.order.model.WebOrderQuantity;
+import com.gameshop.ecommerce.order.store.WebOrderEntity;
+import com.gameshop.ecommerce.order.store.WebOrderQuantityEntity;
+import com.gameshop.ecommerce.user.store.LocalUserRepository;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
+import com.gameshop.ecommerce.order.store.WebOrderRepository;
+import com.gameshop.ecommerce.order.store.WebOrderQuantityRepository;
 import com.gameshop.ecommerce.product.dao.ProductDAO;
 import com.gameshop.ecommerce.product.model.Product;
 import lombok.RequiredArgsConstructor;
@@ -19,51 +19,58 @@ import java.util.List;
 @Service
 public class OrderGeneratorService {
 
-    private final LocalUserDAO localUserDAO;
-    private final WebOrderDAO webOrderDAO;
+    private final LocalUserRepository localUserRepository;
+    private final WebOrderRepository webOrderRepository;
     private final ProductDAO productDAO;
-    private final WebOrderQuantityDAO webOrderQuantityDAO;
+    private final WebOrderQuantityRepository webOrderQuantityRepository;
 
-    List<LocalUser> users = new ArrayList<>();
-    List<Product> products = new ArrayList<>();
-    List<WebOrderQuantity> webOrderQuantities = new ArrayList<>();
+    private final List<LocalUserEntity> users = new ArrayList<>();
+    private final List<Product> products = new ArrayList<>();
+    private final List<WebOrderQuantityEntity> webOrderQuantities = new ArrayList<>();
 
     public void generateOrders() {
-        Faker faker = new Faker();
-        List<WebOrder> orders = new ArrayList<>();
+        final var faker = new Faker();
+        final var orders = new ArrayList<WebOrderEntity>();
+
         if (users.isEmpty()) {
             fillData();
         }
+
         for (int i = 0; i < 50; i++) {
-            WebOrder order = createOrder(faker);
+            WebOrderEntity order = createOrder(faker);
             orders.add(order);
             webOrderQuantities.addAll(order.getQuantities());
         }
-        webOrderDAO.saveAll(orders);
-        webOrderQuantityDAO.saveAll(webOrderQuantities);
+
+        webOrderRepository.saveAll(orders);
+        webOrderQuantityRepository.saveAll(webOrderQuantities);
     }
 
-    private WebOrder createOrder(Faker faker) {
-        WebOrder order = new WebOrder();
-        List<WebOrderQuantity> quantities = new ArrayList<>();
+    private WebOrderEntity createOrder(Faker faker) {
+        final var quantities = new ArrayList<WebOrderQuantityEntity>();
+
+        final var order = WebOrderEntity.builder()
+                .quantities(quantities)
+                .user(users.get(faker.number().numberBetween(0, users.size() - 1)))
+                .build();
+
         for (int i = 0; i < faker.number().numberBetween(1, 5); i++) {
             quantities.add(createOrderQuantity(faker, order));
         }
-        order.setQuantities(quantities);
-        order.setUser(users.get(faker.number().numberBetween(0, users.size() - 1)));
+
         return order;
     }
 
-    private WebOrderQuantity createOrderQuantity(Faker faker, WebOrder webOrder) {
-        WebOrderQuantity orderQuantity = new WebOrderQuantity();
-        orderQuantity.setQuantity(faker.number().numberBetween(1, 6));
-        orderQuantity.setProduct(products.get(faker.number().numberBetween(0, products.size() - 1)));
-        orderQuantity.setOrder(webOrder);
-        return orderQuantity;
+    private WebOrderQuantityEntity createOrderQuantity(Faker faker, WebOrderEntity webOrderEntity) {
+        return WebOrderQuantityEntity.builder()
+                .quantity(faker.number().numberBetween(1, 6))
+                .product(products.get(faker.number().numberBetween(0, products.size() - 1)))
+                .order(webOrderEntity)
+                .build();
     }
 
     private void fillData() {
-        users = localUserDAO.findAll();
-        products = productDAO.findRandomProducts();
+        localUserRepository.findAll();
+        productDAO.findRandomProducts();
     }
 }

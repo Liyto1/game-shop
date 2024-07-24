@@ -1,10 +1,10 @@
 package com.gameshop.ecommerce.cart.controller;
 
-import com.gameshop.ecommerce.cart.model.Cart;
-import com.gameshop.ecommerce.cart.model.CartBody;
-import com.gameshop.ecommerce.cart.model.dto.CartDto;
+import com.gameshop.ecommerce.cart.store.CartEntity;
+import com.gameshop.ecommerce.cart.store.dto.CartBody;
+import com.gameshop.ecommerce.cart.store.dto.CartDto;
 import com.gameshop.ecommerce.cart.service.CartService;
-import com.gameshop.ecommerce.user.model.LocalUser;
+import com.gameshop.ecommerce.user.store.LocalUserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,31 +19,25 @@ public class CartController {
 
     private final CartService cartService;
 
-    @CrossOrigin
     @PostMapping()
-    public ResponseEntity<CartDto> addToCart(@AuthenticationPrincipal LocalUser user, @RequestBody List<CartBody> cartBodyList) {
-        CartDto cart = cartService.addProductToCart(user, cartBodyList);
-        return ResponseEntity.ok(cart);
+    public CartDto addToCart(@AuthenticationPrincipal LocalUserEntity user,
+                             @RequestBody List<CartBody> cartBodyList) {
+        return cartService.addProductToCart(user, cartBodyList);
     }
 
-    @CrossOrigin
     @DeleteMapping("/clear")
-    public ResponseEntity<Cart> clearCart(@AuthenticationPrincipal LocalUser user) {
-        Cart cart = cartService.clearCart(user);
-        return ResponseEntity.ok(cart);
+    public CartEntity clearCart(@AuthenticationPrincipal LocalUserEntity user) {
+        return cartService.clearCart(user);
     }
 
-    @CrossOrigin
     @GetMapping()
-    public ResponseEntity<CartDto> getCartDetails(@AuthenticationPrincipal LocalUser user) {
-        CartDto cart = cartService.getCartDetails(user);
-        return ResponseEntity.ok(cart);
+    public CartDto getCartDetails(@AuthenticationPrincipal LocalUserEntity user) {
+        return cartService.getCartDetails(user);
     }
 
-    @CrossOrigin
     @DeleteMapping()
-    public ResponseEntity<Cart> removeFromCart(@AuthenticationPrincipal LocalUser user, @RequestBody List<CartBody> cartBodies) {
-        Cart cart = cartService.removeProductFromCart(user, cartBodies);
-        return ResponseEntity.ok(cart);
+    public CartEntity removeFromCart(@AuthenticationPrincipal LocalUserEntity user,
+                                     @RequestBody List<CartBody> cartBodies) {
+        return cartService.removeProductFromCart(user, cartBodies);
     }
 }
